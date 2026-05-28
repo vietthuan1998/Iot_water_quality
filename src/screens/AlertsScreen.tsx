@@ -1,15 +1,16 @@
-import React, {useMemo} from 'react';
-import {Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {alerts, waterArea} from '../../db/mockData';
-import {AlertCard} from '../components/alerts/AlertCard';
-import {Counter} from '../components/Counter';
-import {palette} from '../theme';
+import React, { useMemo } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { alerts, waterArea } from '../../db/mockData';
+import { AlertCard } from '../components/alerts/AlertCard';
+import { Counter } from '../components/Counter';
+import { palette } from '../theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type AlertsScreenProps = {
   onBack: () => void;
 };
 
-export function AlertsScreen({onBack}: AlertsScreenProps) {
+export function AlertsScreen({ onBack }: AlertsScreenProps) {
   const totals = useMemo(
     () => ({
       danger: alerts.filter(item => item.level === 'Nguy hiểm').length,
@@ -20,48 +21,63 @@ export function AlertsScreen({onBack}: AlertsScreenProps) {
   );
 
   return (
-    <ScrollView contentContainerStyle={styles.alertScroll}>
-      <View style={styles.alertHeader}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onBack}
-          style={styles.iconButton}>
-          <Text style={styles.iconText}>‹</Text>
-        </Pressable>
-        <Text style={styles.screenTitle}>Cảnh báo</Text>
-        <View style={styles.iconButton}>
-          <Text style={styles.filterIcon}>▽</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.alertScroll}>
+        <View style={styles.alertHeader}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={onBack}
+            style={styles.iconButton}
+          >
+            <Text style={styles.iconText}>‹</Text>
+          </Pressable>
+          <Text style={styles.screenTitle}>Cảnh báo</Text>
+          <View style={styles.iconButton}>
+            <Text style={styles.filterIcon}>▽</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.summaryCard}>
-        <View style={styles.summaryTextBlock}>
-          <Text style={styles.summaryTitle}>Đang có 3 cảnh báo</Text>
-          <Text style={styles.summaryTime}>Cập nhật: {waterArea.updatedAt} ↻</Text>
+        <View style={styles.summaryCard}>
+          <View style={styles.summaryTextBlock}>
+            <Text style={styles.summaryTitle}>Đang có 3 cảnh báo</Text>
+            <Text style={styles.summaryTime}>
+              Cập nhật: {waterArea.updatedAt} ↻
+            </Text>
+          </View>
+          <Counter
+            value={totals.danger}
+            label="Nguy hiểm"
+            color={palette.red}
+          />
+          <Counter
+            value={totals.warning}
+            label="Cảnh báo"
+            color={palette.orange}
+          />
+          <Counter value={totals.notice} label="Lưu ý" color={palette.blue} />
         </View>
-        <Counter value={totals.danger} label="Nguy hiểm" color={palette.red} />
-        <Counter value={totals.warning} label="Cảnh báo" color={palette.orange} />
-        <Counter value={totals.notice} label="Lưu ý" color={palette.blue} />
-      </View>
-      {alerts.map((item, index) => (
-        <AlertCard key={item.id} alert={item} index={index + 1} />
-      ))}
-      <View style={styles.supportCard}>
-        <View>
-          <Text style={styles.supportTitle}>Cần hỗ trợ ngay?</Text>
-          <Text style={styles.supportCopy}>Kỹ thuật viên sẵn sàng hỗ trợ 24/7</Text>
+        {alerts.map((item, index) => (
+          <AlertCard key={item.id} alert={item} index={index + 1} />
+        ))}
+        <View style={styles.supportCard}>
+          <View>
+            <Text style={styles.supportTitle}>Cần hỗ trợ ngay?</Text>
+            <Text style={styles.supportCopy}>
+              Kỹ thuật viên sẵn sàng hỗ trợ 24/7
+            </Text>
+          </View>
+          <Pressable style={styles.callButton}>
+            <Text style={styles.callButtonText}>Gọi kỹ thuật</Text>
+          </Pressable>
         </View>
-        <Pressable style={styles.callButton}>
-          <Text style={styles.callButtonText}>Gọi kỹ thuật</Text>
-        </Pressable>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   alertScroll: {
     paddingHorizontal: 18,
-    paddingTop: 14,
+    // paddingTop: 14,
     paddingBottom: 28,
   },
   alertHeader: {
@@ -83,7 +99,7 @@ const styles = StyleSheet.create({
   filterIcon: {
     color: '#42495d',
     fontSize: 26,
-    transform: [{rotate: '90deg'}],
+    transform: [{ rotate: '90deg' }],
   },
   screenTitle: {
     flex: 1,

@@ -1,60 +1,68 @@
 import React from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
-import type {DrawerContentComponentProps} from '@react-navigation/drawer';
-import {StackActions} from '@react-navigation/native';
-import {owner, waterArea} from '../../db/mockData';
-import {AppRoute} from '../navigation/types';
-import {palette} from '../theme';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import type { DrawerContentComponentProps } from '@react-navigation/drawer';
+import { StackActions } from '@react-navigation/native';
+import { owner, waterArea } from '../../db/mockData';
+import { AppRoute } from '../navigation/types';
+import { palette } from '../theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { logout } from '../store/authSlice';
+import { removeToken } from '../store/persistToken';
+import { store } from '../store';
 
-const drawerItems: Array<{label: string; route: AppRoute; icon: string}> = [
-  {label: 'Tổng quan', route: 'Home', icon: '⌂'},
-  {label: 'Cảnh báo', route: 'Alerts', icon: '!'},
-  {label: 'Lịch sử', route: 'History', icon: '◷'},
-  {label: 'Thiết bị', route: 'Devices', icon: '▤'},
-  {label: 'Cài đặt', route: 'Settings', icon: '⚙'},
+const drawerItems: Array<{ label: string; route: AppRoute; icon: string }> = [
+  { label: 'Tổng quan', route: 'Home', icon: '⌂' },
+  { label: 'Cảnh báo', route: 'Alerts', icon: '!' },
+  { label: 'Lịch sử', route: 'History', icon: '◷' },
+  { label: 'Thiết bị', route: 'Devices', icon: '▤' },
+  { label: 'Cài đặt', route: 'Settings', icon: '⚙' },
 ];
 
-export function AppDrawerContent({navigation}: DrawerContentComponentProps) {
-  const logout = () => {
+export function AppDrawerContent({ navigation }: DrawerContentComponentProps) {
+  const handleLogout = () => {
+    removeToken();
+    store.dispatch(logout());
     navigation.getParent()?.dispatch(StackActions.replace('Login'));
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
-    <View style={styles.drawer}>
-      <View style={styles.profile}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{owner.avatarInitials}</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.drawer}>
+        <View style={styles.profile}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{owner.avatarInitials}</Text>
+          </View>
+          <View style={styles.profileCopy}>
+            <Text style={styles.name}>{owner.name}</Text>
+            <Text style={styles.role}>{owner.role}</Text>
+          </View>
         </View>
-        <View style={styles.profileCopy}>
-          <Text style={styles.name}>{owner.name}</Text>
-          <Text style={styles.role}>{owner.role}</Text>
+
+        <View style={styles.areaBox}>
+          <Text style={styles.areaLabel}>Khu vực đang theo dõi</Text>
+          <Text style={styles.areaName}>{waterArea.name}</Text>
+          <Text style={styles.areaStatus}>{waterArea.status}</Text>
         </View>
-      </View>
 
-      <View style={styles.areaBox}>
-        <Text style={styles.areaLabel}>Khu vực đang theo dõi</Text>
-        <Text style={styles.areaName}>{waterArea.name}</Text>
-        <Text style={styles.areaStatus}>{waterArea.status}</Text>
-      </View>
+        <View style={styles.menuList}>
+          {drawerItems.map(item => (
+            <Pressable
+              key={item.route}
+              onPress={() =>
+                navigation.navigate('Dashboard', { screen: item.route })
+              }
+              style={styles.menuItem}
+            >
+              <Text style={styles.menuIcon}>{item.icon}</Text>
+              <Text style={styles.menuLabel}>{item.label}</Text>
+            </Pressable>
+          ))}
+        </View>
 
-      <View style={styles.menuList}>
-        {drawerItems.map(item => (
-          <Pressable
-            key={item.route}
-            onPress={() => navigation.navigate('Dashboard', {screen: item.route})}
-            style={styles.menuItem}>
-            <Text style={styles.menuIcon}>{item.icon}</Text>
-            <Text style={styles.menuLabel}>{item.label}</Text>
-          </Pressable>
-        ))}
+        <Pressable onPress={handleLogout} style={styles.logoutButton}>
+          <Text style={styles.logoutText}>Đăng xuất</Text>
+        </Pressable>
       </View>
-
-      <Pressable onPress={logout} style={styles.logoutButton}>
-        <Text style={styles.logoutText}>Đăng xuất</Text>
-      </Pressable>
-    </View>
     </SafeAreaView>
   );
 }

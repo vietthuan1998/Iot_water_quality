@@ -1,12 +1,12 @@
 import React from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {palette} from '../../theme';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { palette } from '../../theme';
 
 type AlertHeroProps = {
   onOpenAlerts: () => void;
 };
 
-export function AlertHero({onOpenAlerts}: AlertHeroProps) {
+export function AlertHero({ onOpenAlerts }: AlertHeroProps) {
   return (
     <View style={styles.hero}>
       <View style={styles.heroWarningIcon}>
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     overflow: 'hidden',
     shadowColor: palette.red,
-    shadowOffset: {width: 0, height: 10},
+    shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.2,
     shadowRadius: 18,
     elevation: 5,

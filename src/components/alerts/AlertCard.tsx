@@ -1,41 +1,52 @@
 import React from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {AlertItem} from '../../../db/mockData';
-import {MiniChart} from '../MiniChart';
-import {palette} from '../../theme';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { AlertItem } from '../../../db/mockData';
+import { MiniChart } from '../MiniChart';
+import { palette } from '../../theme';
 
 type AlertCardProps = {
   alert: AlertItem;
   index: number;
 };
 
-export function AlertCard({alert, index}: AlertCardProps) {
+export function AlertCard({ alert, index }: AlertCardProps) {
   return (
-    <View style={[styles.alertCard, {borderColor: `${alert.color}26`}]}>
+    <View style={[styles.alertCard, { borderColor: `${alert.color}26` }]}>
       <View style={styles.alertCardHeader}>
-        <View style={[styles.alertNumber, {backgroundColor: alert.color}]}>
+        <View style={[styles.alertNumber, { backgroundColor: alert.color }]}>
           <Text style={styles.alertNumberText}>{index}</Text>
         </View>
         <Text style={styles.alertTitle}>{alert.title}</Text>
-        <Text style={[styles.alertLevel, {color: alert.color}]}>{alert.level}</Text>
+        <Text style={[styles.alertLevel, { color: alert.color }]}>
+          {alert.level}
+        </Text>
       </View>
       <View style={styles.alertBody}>
         <View style={styles.alertValueBlock}>
-          <Text style={[styles.alertValue, {color: alert.color}]}>
+          <Text style={[styles.alertValue, { color: alert.color }]}>
             {alert.value}
             <Text style={styles.alertValueUnit}> {alert.unit}</Text>
           </Text>
-          <Text style={styles.safeRange}>Ngưỡng an toàn: {alert.safeRange}</Text>
+          <Text style={styles.safeRange}>
+            Ngưỡng an toàn: {alert.safeRange}
+          </Text>
         </View>
         <MiniChart data={alert.history} color={alert.color} />
       </View>
       <View style={styles.recommendBox}>
-        <Text style={[styles.recommendTitle, {color: alert.color}]}>KHUYẾN NGHỊ</Text>
+        <Text style={[styles.recommendTitle, { color: alert.color }]}>
+          KHUYẾN NGHỊ
+        </Text>
         <View style={styles.recommendContent}>
           <View style={styles.recommendList}>
             {alert.recommendations.map((item, itemIndex) => (
               <View key={item} style={styles.recommendRow}>
-                <View style={[styles.recommendIndex, {backgroundColor: alert.color}]}>
+                <View
+                  style={[
+                    styles.recommendIndex,
+                    { backgroundColor: alert.color },
+                  ]}
+                >
                   <Text style={styles.recommendIndexText}>{itemIndex + 1}</Text>
                 </View>
                 <Text style={styles.recommendText}>{item}</Text>
@@ -44,13 +55,19 @@ export function AlertCard({alert, index}: AlertCardProps) {
           </View>
           <View style={styles.actionColumn}>
             {alert.primaryAction ? (
-              <Pressable style={[styles.primaryAction, {backgroundColor: alert.color}]}>
-                <Text style={styles.primaryActionText}>{alert.primaryAction}</Text>
+              <Pressable
+                style={[styles.primaryAction, { backgroundColor: alert.color }]}
+              >
+                <Text style={styles.primaryActionText}>
+                  {alert.primaryAction}
+                </Text>
               </Pressable>
             ) : null}
             {alert.secondaryAction ? (
               <Pressable style={styles.secondaryAction}>
-                <Text style={[styles.secondaryActionText, {color: alert.color}]}>
+                <Text
+                  style={[styles.secondaryActionText, { color: alert.color }]}
+                >
                   {alert.secondaryAction}
                 </Text>
               </Pressable>

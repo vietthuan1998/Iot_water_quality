@@ -1,14 +1,14 @@
 import React from 'react';
-import {ScrollView, StyleSheet } from 'react-native';
-import {BottomNav} from '../components/BottomNav';
-import {SectionTitle} from '../components/SectionTitle';
-import {AiPanel} from '../components/home/AiPanel';
-import {AlertHero} from '../components/home/AlertHero';
-import {CameraPanel} from '../components/home/CameraPanel';
-import {Header} from '../components/home/Header';
-import {MetricGrid} from '../components/home/MetricGrid';
-import {StatusPanel} from '../components/home/StatusPanel';
-import {Navigate} from '../navigation/types';
+import { ScrollView, StyleSheet } from 'react-native';
+import { BottomNav } from '../components/BottomNav';
+import { SectionTitle } from '../components/SectionTitle';
+import { AiPanel } from '../components/home/AiPanel';
+import { AlertHero } from '../components/home/AlertHero';
+import { CameraPanel } from '../components/home/CameraPanel';
+import { Header } from '../components/home/Header';
+import { MetricGrid } from '../components/home/MetricGrid';
+import { StatusPanel } from '../components/home/StatusPanel';
+import { Navigate } from '../navigation/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type HomeScreenProps = {

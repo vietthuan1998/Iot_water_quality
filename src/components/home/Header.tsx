@@ -1,14 +1,15 @@
 import React from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {owner, waterArea} from '../../../db/mockData';
-import {palette} from '../../theme';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { owner, waterArea } from '../../../db/mockData';
+import { palette } from '../../theme';
+import Icon from 'react-native-vector-icons/EvilIcons';
 
 type HeaderProps = {
   onOpenDrawer: () => void;
   onOpenAlerts: () => void;
 };
 
-export function Header({onOpenAlerts, onOpenDrawer}: HeaderProps) {
+export function Header({ onOpenAlerts, onOpenDrawer }: HeaderProps) {
   return (
     <View style={styles.header}>
       <Pressable onPress={onOpenDrawer} style={styles.menuButton}>
@@ -28,7 +29,8 @@ export function Header({onOpenAlerts, onOpenDrawer}: HeaderProps) {
         <Text style={styles.ownerRole}>{owner.role}</Text>
       </View>
       <Pressable onPress={onOpenAlerts} style={styles.bellButton}>
-        <Text style={styles.bellText}>♢</Text>
+        {/* <Text style={styles.bellText}>♢</Text> */}
+        <Icon name="bell" size={24} color="#000000" />
         <View style={styles.badge}>
           <Text style={styles.badgeText}>3</Text>
         </View>
