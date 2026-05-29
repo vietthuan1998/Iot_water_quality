@@ -77,7 +77,6 @@ export function AlertsScreen({ onBack }: AlertsScreenProps) {
 const styles = StyleSheet.create({
   alertScroll: {
     paddingHorizontal: 18,
-    // paddingTop: 14,
     paddingBottom: 28,
   },
   alertHeader: {

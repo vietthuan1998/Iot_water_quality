@@ -1,13 +1,13 @@
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {SensorMetric, metrics} from '../../../db/mockData';
+import {SensorMetric} from '../../../db/mockData';
 import {palette} from '../../theme';
 
-export function MetricGrid() {
+export function MetricGrid({data}: any) {
   return (
     <View style={styles.metricGrid}>
-      {metrics.map(metric => (
-        <MetricCard key={metric.id} metric={metric} />
+      {data?.length > 0 && data?.map((v:any) => (
+        <MetricCard key={v.id} metric={v} />
       ))}
       <Pressable style={styles.moreCard}>
         <View style={styles.waterIcon}>
@@ -19,17 +19,20 @@ export function MetricGrid() {
   );
 }
 
-function MetricCard({metric}: {metric: SensorMetric}) {
+function MetricCard({metric}: {metric: any}) {
+  // console.log(metric)
   return (
     <View style={styles.metricCard}>
       <View style={[styles.metricIcon, {backgroundColor: metric.color}]}>
         <Text style={styles.metricIconText}>
-          {metric.id === 'temp' ? '°' : metric.shortLabel}
+          {metric.id === 'temp' ? '°C' : metric.shortLabel}
         </Text>
       </View>
       <Text style={styles.metricLabel}>{metric.label}</Text>
       <Text style={styles.metricValue}>
-        {metric.value}
+        {typeof metric.value === 'number'
+          ? parseFloat(metric.value.toFixed(2))
+          : metric.value}
         <Text style={styles.metricUnit}> {metric.unit}</Text>
       </Text>
       <View style={[styles.metricStatus, statusTint(metric.severity)]}>
