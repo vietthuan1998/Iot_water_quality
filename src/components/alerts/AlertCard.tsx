@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { AlertItem } from '../../../db/mockData';
 import { MiniChart } from '../MiniChart';
 import { palette } from '../../theme';
@@ -33,7 +33,7 @@ export function AlertCard({ alert, index }: AlertCardProps) {
         </View>
         <MiniChart data={alert.history} color={alert.color} />
       </View>
-      <View style={styles.recommendBox}>
+      {/* <View style={styles.recommendBox}>
         <Text style={[styles.recommendTitle, { color: alert.color }]}>
           KHUYẾN NGHỊ
         </Text>
@@ -74,7 +74,7 @@ export function AlertCard({ alert, index }: AlertCardProps) {
             ) : null}
           </View>
         </View>
-      </View>
+      </View> */}
     </View>
   );
 }

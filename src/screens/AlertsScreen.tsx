@@ -5,6 +5,7 @@ import { AlertCard } from '../components/alerts/AlertCard';
 import { Counter } from '../components/Counter';
 import { palette } from '../theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/Feather';
 
 type AlertsScreenProps = {
   onBack: () => void;
@@ -33,7 +34,7 @@ export function AlertsScreen({ onBack }: AlertsScreenProps) {
           </Pressable>
           <Text style={styles.screenTitle}>Cảnh báo</Text>
           <View style={styles.iconButton}>
-            <Text style={styles.filterIcon}>▽</Text>
+            <Icon name="filter" size={24}/>
           </View>
         </View>
         <View style={styles.summaryCard}>

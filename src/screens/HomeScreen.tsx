@@ -1,10 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { BottomNav } from '../components/BottomNav';
 import { SectionTitle } from '../components/SectionTitle';
-import { AiPanel } from '../components/home/AiPanel';
 import { AlertHero } from '../components/home/AlertHero';
-import { CameraPanel } from '../components/home/CameraPanel';
 import { Header } from '../components/home/Header';
 import { MetricGrid } from '../components/home/MetricGrid';
 import { StatusPanel } from '../components/home/StatusPanel';
@@ -12,6 +10,7 @@ import { Navigate } from '../navigation/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getNewSensorsValue } from '../api/sensorApi';
 import { SensorMetric, Severity } from '../../db/mockData';
+import { RefreshControl } from 'react-native-gesture-handler';
 
 type HomeScreenProps = {
   onOpenDrawer: () => void;
@@ -28,7 +27,10 @@ function getPhSeverity(v: number): { severity: Severity; status: string } {
   return { severity: 'danger', status: 'Nguy hiểm' };
 }
 
-function getTempWaterSeverity(v: number): { severity: Severity; status: string } {
+function getTempWaterSeverity(v: number): {
+  severity: Severity;
+  status: string;
+} {
   if (v >= 22 && v <= 28) return { severity: 'normal', status: 'Bình thường' };
   if ((v > 28 && v <= 32) || (v >= 18 && v < 22))
     return { severity: 'warning', status: v > 28 ? 'Hơi cao' : 'Hơi thấp' };
@@ -48,11 +50,17 @@ function getTempAirSeverity(v: number): { severity: Severity; status: string } {
   return { severity: 'danger', status: 'Nguy hiểm' };
 }
 
+function getHumidityAirSeverity(v: number): {
+  severity: Severity;
+  status: string;
+} {
+  if (v >= 40 && v <= 60) return { severity: 'normal', status: 'Bình thường' };
+  if (v > 60 && v <= 80) return { severity: 'warning', status: 'Hơi ẩm' };
+  return { severity: 'danger', status: v < 40 ? 'Quá khô' : 'Quá ẩm' };
+}
+
 // Màu sắc dựa theo severity
-function severityColor(
-  severity: Severity,
-  normalColor = '#19b85a',
-): string {
+function severityColor(severity: Severity, normalColor = '#19b85a'): string {
   if (severity === 'danger') return '#ef233c';
   if (severity === 'warning') return '#ff6b1a';
   return normalColor;
@@ -69,24 +77,42 @@ export function HomeScreen({
   const [tempWaterRaw, setTempWaterRaw] = useState<any>(null);
   const [tdsRaw, setTdsRaw] = useState<any>(null);
   const [tempAirRaw, setTempAirRaw] = useState<any>(null);
+  const [humidityAirRaw, setHumidityAirRaw] = useState<any>(null);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const getAllData = async () => {
+    try {
+      setLoading(true);
+
+      const [phRes, tempWaterRes, tdsRes, tempAndHumidityAirRes] =
+        await Promise.all([
+          getNewSensorsValue({ deviceId: 14 }),
+          getNewSensorsValue({ deviceId: 13 }),
+          getNewSensorsValue({ deviceId: 15 }),
+          getNewSensorsValue({ deviceId: 16 }),
+        ]);
+
+      setPhRaw(phRes?.data?.[0] ?? null);
+      setTempWaterRaw(tempWaterRes?.data?.[0] ?? null);
+      setTdsRaw(tdsRes?.data?.[0] ?? null);
+      setTempAirRaw(tempAndHumidityAirRes?.data?.[0] ?? null);
+      setHumidityAirRaw(tempAndHumidityAirRes?.data?.[1] ?? null);
+    } catch (error) {
+      console.log('Load sensor error:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    getAllData();
+  }, []);
 
   useEffect(() => {
-    /** pH – deviceId 14 */
-    getNewSensorsValue({ deviceId: 14 }).then(res => {
-      setPhRaw(res?.data?.[0] ?? null);
-    });
-    /** Nhiệt độ nước DS18B20 – deviceId 13 */
-    getNewSensorsValue({ deviceId: 13 }).then(res => {
-      setTempWaterRaw(res?.data?.[0] ?? null);
-    });
-    /** TDS – deviceId 15 */
-    getNewSensorsValue({ deviceId: 15 }).then(res => {
-      setTdsRaw(res?.data?.[0] ?? null);
-    });
-    /** Nhiệt độ không khí SHT31 – deviceId 16 */
-    getNewSensorsValue({ deviceId: 16 }).then(res => {
-      setTempAirRaw(res?.data?.[0] ?? null);
-    });
+    getAllData();
   }, []);
 
   /** Chuyển đổi raw API → SensorMetric[] */
@@ -152,7 +178,7 @@ export function HomeScreen({
       const { severity, status } = getTempAirSeverity(value);
       result.push({
         id: 'temp-air',
-        label: 'Nhiệt độ KK',
+        label: 'Nhiệt độ môi trường',
         shortLabel: '°C',
         value,
         unit: '°C',
@@ -165,12 +191,43 @@ export function HomeScreen({
       });
     }
 
+    if (humidityAirRaw) {
+      const value: number = humidityAirRaw.valueNumeric;
+      const { severity, status } = getHumidityAirSeverity(value);
+      result.push({
+        id: 'humidity-air',
+        label: 'Độ ẩm môi trường',
+        shortLabel: '%',
+        value,
+        unit: '%',
+        status,
+        severity,
+        trend: 'stable',
+        safeRange: '40 – 60 %',
+        color: '#43a047',
+        history: [],
+      });
+    }
+
     return result;
-  }, [phRaw, tempWaterRaw, tdsRaw, tempAirRaw]);
+  }, [phRaw, tempWaterRaw, tdsRaw, tempAirRaw, humidityAirRaw]);
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.loadingScreen}>
+        <ActivityIndicator size="large" color="#1179ff" />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.appShell}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <Header onOpenAlerts={onOpenAlerts} onOpenDrawer={onOpenDrawer} />
         <AlertHero onOpenAlerts={onOpenAlerts} />
         <SectionTitle title="Tổng quan hồ" />
@@ -181,14 +238,6 @@ export function HomeScreen({
           onPress={onOpenAlerts}
         />
         <MetricGrid data={metrics} />
-        <SectionTitle
-          title="AI nhận định"
-          action="Xem chi tiết AI"
-          onPress={onOpenAlerts}
-        />
-        <AiPanel />
-        <SectionTitle title="Camera hồ" action="Xem tất cả" />
-        <CameraPanel />
       </ScrollView>
       <BottomNav onNavigate={onNavigate} />
     </SafeAreaView>
@@ -203,5 +252,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 14,
     paddingBottom: 112,
+  },
+  loadingScreen: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
