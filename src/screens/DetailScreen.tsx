@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { alerts, waterArea } from '../../db/mockData';
+import { alerts } from '../../db/mockData';
 import { AlertCard } from '../components/alerts/AlertCard';
-import { Counter } from '../components/Counter';
 import { palette } from '../theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Feather';
@@ -10,22 +9,15 @@ import Loading from '../components/Loading';
 import { RefreshControl } from 'react-native-gesture-handler';
 import { getChartsData } from '../api/chartApi';
 
-type AlertsScreenProps = {
+type DetailScreenProps = {
   onBack: () => void;
+  metricId: any;
 };
 
-export function AlertsScreen({ onBack }: AlertsScreenProps) {
+export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
+  console.log('DetailScreen metricId:', metricId);
   const [refreshing, setRefreshing] = React.useState(false);
   const [loading, setLoading] = useState(true);
-
-  const totals = useMemo(
-    () => ({
-      danger: alerts.filter(item => item.level === 'Nguy hiểm').length,
-      warning: alerts.filter(item => item.level === 'Cảnh báo').length,
-      notice: alerts.filter(item => item.level === 'Lưu ý').length,
-    }),
-    [],
-  );
 
   const getDataCharts = async () => {
     try {
@@ -69,29 +61,10 @@ export function AlertsScreen({ onBack }: AlertsScreenProps) {
           >
             <Text style={styles.iconText}>‹</Text>
           </Pressable>
-          <Text style={styles.screenTitle}>Cảnh báo</Text>
+          <Text style={styles.screenTitle}>Lịch sử</Text>
           <View style={styles.iconButton}>
             <Icon name="filter" size={24} />
           </View>
-        </View>
-        <View style={styles.summaryCard}>
-          <View style={styles.summaryTextBlock}>
-            <Text style={styles.summaryTitle}>Đang có 3 cảnh báo</Text>
-            <Text style={styles.summaryTime}>
-              Cập nhật: {waterArea.updatedAt} ↻
-            </Text>
-          </View>
-          <Counter
-            value={totals.danger}
-            label="Nguy hiểm"
-            color={palette.red}
-          />
-          <Counter
-            value={totals.warning}
-            label="Cảnh báo"
-            color={palette.orange}
-          />
-          <Counter value={totals.notice} label="Lưu ý" color={palette.blue} />
         </View>
         {alerts.map((item, index) => (
           <AlertCard key={item.id} alert={item} index={index + 1} />

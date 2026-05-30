@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { BottomNav } from '../components/BottomNav';
 import { SectionTitle } from '../components/SectionTitle';
 import { AlertHero } from '../components/home/AlertHero';
@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { getNewSensorsValue } from '../api/sensorApi';
 import { SensorMetric, Severity } from '../../db/mockData';
 import { RefreshControl } from 'react-native-gesture-handler';
+import Loading from '../components/Loading';
 
 type HomeScreenProps = {
   onOpenDrawer: () => void;
@@ -212,12 +213,12 @@ export function HomeScreen({
     return result;
   }, [phRaw, tempWaterRaw, tdsRaw, tempAirRaw, humidityAirRaw]);
 
+  const onSelectMetric = (metricId: string) => {
+    onNavigate('Detail', { metricId });
+  };
+
   if (loading) {
-    return (
-      <SafeAreaView style={styles.loadingScreen}>
-        <ActivityIndicator size="large" color="#1179ff" />
-      </SafeAreaView>
-    );
+    return <Loading />;
   }
 
   return (
@@ -237,7 +238,7 @@ export function HomeScreen({
           action="Xem chi tiết"
           onPress={onOpenAlerts}
         />
-        <MetricGrid data={metrics} />
+        <MetricGrid data={metrics} onSelect={onSelectMetric} />
       </ScrollView>
       <BottomNav onNavigate={onNavigate} />
     </SafeAreaView>

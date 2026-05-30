@@ -1,4 +1,4 @@
-import type {NavigatorScreenParams} from '@react-navigation/native';
+import type { NavigatorScreenParams } from '@react-navigation/native';
 
 export type AppStackParamList = {
   Home: undefined;
@@ -6,6 +6,7 @@ export type AppStackParamList = {
   History: undefined;
   Devices: undefined;
   Settings: undefined;
+  Detail: { metricId: string };
 };
 
 export type DrawerParamList = {
@@ -19,4 +20,4 @@ export type RootStackParamList = {
 
 export type AppRoute = keyof AppStackParamList;
 
-export type Navigate = (route: AppRoute) => void;
+export type Navigate = (route: AppRoute, params?: any) => void;

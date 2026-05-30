@@ -19,6 +19,7 @@ import {
 import { getToken, saveToken } from '../store/persistToken';
 import { setToken } from '../store/authSlice';
 import { store } from '../store';
+import { DetailScreen } from '../screens/DetailScreen';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -101,6 +102,7 @@ function AppStackRoute() {
       <AppStack.Screen name="History" component={HistoryRoute} />
       <AppStack.Screen name="Devices" component={DevicesRoute} />
       <AppStack.Screen name="Settings" component={SettingsRoute} />
+      <AppStack.Screen name="Detail" component={DetailRoute} />
     </AppStack.Navigator>
   );
 }
@@ -108,7 +110,8 @@ function AppStackRoute() {
 function HomeRoute({
   navigation,
 }: NativeStackScreenProps<AppStackParamList, 'Home'>) {
-  const navigate = (route: AppRoute) => navigation.navigate(route);
+  const navigate = (route: AppRoute, params?: any) =>
+    navigation.navigate(route as any, params);
 
   return (
     <HomeScreen
@@ -146,5 +149,17 @@ function SettingsRoute({
 }: NativeStackScreenProps<AppStackParamList, 'Settings'>) {
   return (
     <PlaceholderScreen route="Settings" onBack={() => navigation.goBack()} />
+  );
+}
+
+function DetailRoute({
+  navigation,
+  route,
+}: NativeStackScreenProps<AppStackParamList, 'Detail'>) {
+  return (
+    <DetailScreen
+      onBack={() => navigation.goBack()}
+      metricId={route.params.metricId}
+    />
   );
 }
