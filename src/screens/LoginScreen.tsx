@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -8,21 +8,22 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import {owner, waterArea} from '../../db/mockData';
-import {palette} from '../theme';
+import { owner, waterArea } from '../../db/mockData';
+import { palette } from '../theme';
 
 type LoginScreenProps = {
   onLogin: () => void;
 };
 
-export function LoginScreen({onLogin}: LoginScreenProps) {
+export function LoginScreen({ onLogin }: LoginScreenProps) {
   const [email, setEmail] = useState('an.nguyen@aquaguard.vn');
   const [password, setPassword] = useState('demo1234');
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={styles.screen}>
+      style={styles.screen}
+    >
       <View style={styles.brandMark}>
         <Text style={styles.brandIcon}>≈</Text>
       </View>
@@ -55,11 +56,12 @@ export function LoginScreen({onLogin}: LoginScreenProps) {
           accessibilityRole="button"
           disabled={!email || !password}
           onPress={onLogin}
-          style={({pressed}) => [
+          style={({ pressed }) => [
             styles.loginButton,
             pressed && styles.pressed,
             (!email || !password) && styles.disabledButton,
-          ]}>
+          ]}
+        >
           <Text style={styles.loginButtonText}>Đăng nhập</Text>
         </Pressable>
       </View>

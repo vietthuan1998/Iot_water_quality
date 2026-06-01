@@ -16,6 +16,7 @@ import {
   getAllIotDevices,
   getAllSensorsParams,
   getSensorsValue,
+  getThresholdValue,
 } from '../api/sensorApi';
 import Dropdown from '../components/Dropdown';
 import HistoryItemCard from '../components/alerts/HistoryItemCard';
@@ -37,6 +38,7 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
+  const [warningZone, setWarningZone] = useState<any[]>([]);
 
   const getDataCharts = useCallback(async () => {
     try {
@@ -111,15 +113,33 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
       setLoading(false);
     }
   }, []);
+
+  const getWarningZone = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await getThresholdValue({
+        page: 1,
+        pageSize: 500,
+        deviceId: selectedDevice,
+      });
+      setWarningZone(res.data);
+    } catch (err) {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedDevice]);
+
   useEffect(() => {
     getIotDevices();
   }, [getIotDevices]);
 
   useEffect(() => {
     getDataCharts();
+    getWarningZone();
     // When selectedDevice changes, reload history (replace existing list)
     getDataHistory(1, 'initial');
-  }, [getDataCharts, getDataHistory, selectedDevice]);
+  }, [getDataCharts, getDataHistory, getWarningZone, selectedDevice]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -145,8 +165,8 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
           setSelectedDevice(val);
         }}
       />
-      <View style={{ marginTop: 18 }}>
-        <Chart data={chartData} />
+      <View style={{ marginTop: 18, overflow: 'hidden' }}>
+        <Chart data={chartData} zone={warningZone} />
       </View>
     </View>
   );

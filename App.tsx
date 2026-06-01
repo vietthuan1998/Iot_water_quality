@@ -3,12 +3,15 @@ import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigation } from './src/navigation/AppNavigation';
 import { palette } from './src/theme';
+import { WarningLevelProvider } from './src/context/WarningLevelContext';
 
 function App() {
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle="dark-content" backgroundColor={palette.page} />
-      <AppNavigation />
+      <WarningLevelProvider>
+        <StatusBar barStyle="dark-content" backgroundColor={palette.page} />
+        <AppNavigation />
+      </WarningLevelProvider>
     </SafeAreaProvider>
   );
 }

@@ -11,7 +11,6 @@ export interface ChartParams {
   toTime?: string;
 }
 export async function getChartsData(param: ChartParams) {
-  console.log('getChartsData params:', param);
   const body: ChartParams = {};
   body.toTime = param.toTime ? param.toTime : new Date().toISOString();
   body.fromTime = param.fromTime
@@ -25,5 +24,10 @@ export async function getChartsData(param: ChartParams) {
     body.deviceId = param.deviceId;
   }
   const res = await http.get('api/iotobservation/chart-data', { params: body });
+  return res.data;
+}
+
+export async function getAlertLevel() {
+  const res = await http.get('dmalertlevel/get-all');
   return res.data;
 }

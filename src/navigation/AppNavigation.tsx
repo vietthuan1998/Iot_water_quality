@@ -20,6 +20,8 @@ import { getToken, saveToken } from '../store/persistToken';
 import { setToken } from '../store/authSlice';
 import { store } from '../store';
 import { DetailScreen } from '../screens/DetailScreen';
+import { useWarningLevels } from '../context/WarningLevelContext';
+import { getAlertLevel } from '../api/chartApi';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -29,6 +31,7 @@ export function AppNavigation() {
   const [isReady, setIsReady] = useState(false);
   const [initialRoute, setInitialRoute] =
     useState<keyof RootStackParamList>('Login');
+  const { setWarningLevels } = useWarningLevels();
 
   useEffect(() => {
     const token = getToken();
@@ -39,7 +42,9 @@ export function AppNavigation() {
     setIsReady(true);
   }, []);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    const res = await getAlertLevel();
+    setWarningLevels(res.data);
     const token = 'demo-token';
     saveToken(token);
     store.dispatch(setToken(token));
