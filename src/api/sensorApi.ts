@@ -5,8 +5,8 @@ export type getAllSensorsParams = {
   deviceId?: number;
   // id loai chi so
   parameterId?: number;
-  fromTime?: number;
-  toTime?: number;
+  fromTime?: string;
+  toTime?: string;
   page?: number;
   pageSize?: number;
 };
@@ -22,6 +22,8 @@ export async function getSensorsValue(params: getAllSensorsParams) {
   if (params.deviceId) {
     body.deviceId = params.deviceId;
   }
+  if (params.fromTime) body.fromTime = params.fromTime;
+  if (params.toTime) body.toTime = params.toTime;
   const res = await http.get('api/iotobservation/get-all', { params: body });
   return res.data;
 }

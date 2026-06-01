@@ -136,9 +136,7 @@ function AlertsRoute({
 function HistoryRoute({
   navigation,
 }: NativeStackScreenProps<AppStackParamList, 'History'>) {
-  return (
-    <PlaceholderScreen route="History" onBack={() => navigation.goBack()} />
-  );
+  return <DetailScreen onBack={() => navigation.goBack()} />;
 }
 
 function DevicesRoute({

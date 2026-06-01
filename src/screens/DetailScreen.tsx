@@ -20,10 +20,11 @@ import {
 } from '../api/sensorApi';
 import Dropdown from '../components/Dropdown';
 import HistoryItemCard from '../components/alerts/HistoryItemCard';
+import { DateTimeField } from '../components/DateTimeField';
 
 type DetailScreenProps = {
   onBack: () => void;
-  metricId: any;
+  metricId?: any;
 };
 
 const PageSize = 10;
@@ -39,19 +40,19 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [warningZone, setWarningZone] = useState<any[]>([]);
+  const [fromDate, setFromDate] = useState(
+    new Date(Date.now() - 24 * 60 * 60 * 1000),
+  );
+  const [toDate, setToDate] = useState(new Date());
 
   const getDataCharts = useCallback(async () => {
     try {
-      // const timeNow = new Date().toISOString();
-      // const timeOneHourAgo = new Date(
-      //   Date.now() - 12 * 60 * 60 * 1000,
-      // ).toISOString();
       const param: ChartParams = {};
       if (selectedDevice) {
         param.deviceId = selectedDevice;
       }
-      // param.fromTime = timeOneHourAgo || undefined;
-      // param.toTime = timeNow || undefined;
+      param.fromTime = fromDate.toISOString();
+      param.toTime = toDate.toISOString();
       setLoading(true);
       // Giả lập gọi API lấy dữ liệu mới
       const res = await getChartsData(param);
@@ -63,7 +64,7 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
       setRefreshing(false);
       setLoadingMore(false);
     }
-  }, [selectedDevice]);
+  }, [selectedDevice, fromDate, toDate]);
 
   const getDataHistory = useCallback(
     async (
@@ -80,6 +81,8 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
         }
         param.page = pageToLoad;
         param.pageSize = PageSize;
+        param.fromTime = fromDate.toISOString();
+        param.toTime = toDate.toISOString();
         const res = await getSensorsValue(param);
         const list = res.data || [];
         // Fix: Kiểm tra xem có dữ liệu tiếp theo không (nếu trả về đủ PageSize items)
@@ -99,7 +102,7 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
         setLoadingMore(false);
       }
     },
-    [selectedDevice],
+    [selectedDevice, fromDate, toDate],
   );
 
   const getIotDevices = useCallback(async () => {
@@ -139,7 +142,14 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
     getWarningZone();
     // When selectedDevice changes, reload history (replace existing list)
     getDataHistory(1, 'initial');
-  }, [getDataCharts, getDataHistory, getWarningZone, selectedDevice]);
+  }, [
+    getDataCharts,
+    getDataHistory,
+    getWarningZone,
+    selectedDevice,
+    fromDate,
+    toDate,
+  ]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -148,9 +158,7 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
   };
 
   const onEndReached = () => {
-    // Prevent triggering load-more on initial mount or while loading
     if (loading || loadingMore || !hasMore) return;
-    // If there's no data yet (initial render), skip -- avoids onEndReached firing on mount
     if (historyData.length === 0) return;
 
     getDataHistory(page + 1, 'more');
@@ -158,6 +166,7 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
 
   const headerComponent = () => (
     <View style={styles.headerContainer}>
+      {/* Chọn thiết bị */}
       <Dropdown
         data={IotDiveces}
         value={selectedDevice}
@@ -165,7 +174,11 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
           setSelectedDevice(val);
         }}
       />
-      <View style={{ marginTop: 18, overflow: 'hidden' }}>
+      <View style={styles.filterRow}>
+        <DateTimeField label="From" value={fromDate} onChange={setFromDate} />
+        <DateTimeField label="To" value={toDate} onChange={setToDate} />
+      </View>
+      <View style={styles.chartWrapper}>
         <Chart data={chartData} zone={warningZone} />
       </View>
     </View>
@@ -323,6 +336,20 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   headerContainer: {
-    paddingBottom: 18,
+    // paddingHorizontal: 16,
+    paddingTop: 12,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    gap: 12,
+  },
+  filterItem: {
+    flex: 1,
+  },
+  chartWrapper: {
+    marginTop: 18,
+    overflow: 'hidden',
   },
 });
