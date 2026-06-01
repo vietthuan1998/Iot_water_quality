@@ -36,7 +36,10 @@ function MetricCard({
 }) {
   // console.log(metric)
   return (
-    <Pressable style={styles.metricCard} onPress={() => onSelect(metric.id)}>
+    <Pressable
+      style={styles.metricCard}
+      onPress={() => onSelect(metric.deviceId)}
+    >
       <View style={[styles.metricIcon, { backgroundColor: metric.color }]}>
         <Text style={styles.metricIconText}>
           {metric.id === 'temp' ? '°C' : metric.shortLabel}

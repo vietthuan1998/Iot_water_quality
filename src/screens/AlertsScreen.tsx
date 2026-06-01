@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { alerts, waterArea } from '../../db/mockData';
 import { AlertCard } from '../components/alerts/AlertCard';
@@ -6,9 +6,7 @@ import { Counter } from '../components/Counter';
 import { palette } from '../theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Feather';
-import Loading from '../components/Loading';
 import { RefreshControl } from 'react-native-gesture-handler';
-import { getChartsData } from '../api/chartApi';
 
 type AlertsScreenProps = {
   onBack: () => void;
@@ -16,7 +14,6 @@ type AlertsScreenProps = {
 
 export function AlertsScreen({ onBack }: AlertsScreenProps) {
   const [refreshing, setRefreshing] = React.useState(false);
-  const [loading, setLoading] = useState(true);
 
   const totals = useMemo(
     () => ({
@@ -26,39 +23,15 @@ export function AlertsScreen({ onBack }: AlertsScreenProps) {
     }),
     [],
   );
-
-  const getDataCharts = async () => {
-    try {
-      setLoading(true);
-      // Giả lập gọi API lấy dữ liệu mới
-      const res = await getChartsData();
-      console.log('Dữ liệu charts mới:', res);
-    } catch (error) {
-      console.error('Lỗi khi lấy dữ liệu charts:', error);
-      setLoading(false);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-  useEffect(() => {
-    getDataCharts();
-  }, []);
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    getDataCharts();
-  };
-  if (loading) {
-    return <Loading />;
-  }
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView
         contentContainerStyle={styles.alertScroll}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => setRefreshing(false)}
+          />
         }
       >
         <View style={styles.alertHeader}>

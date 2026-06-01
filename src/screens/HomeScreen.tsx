@@ -8,7 +8,7 @@ import { MetricGrid } from '../components/home/MetricGrid';
 import { StatusPanel } from '../components/home/StatusPanel';
 import { Navigate } from '../navigation/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getNewSensorsValue } from '../api/sensorApi';
+import { getSensorsValue } from '../api/sensorApi';
 import { SensorMetric, Severity } from '../../db/mockData';
 import { RefreshControl } from 'react-native-gesture-handler';
 import Loading from '../components/Loading';
@@ -17,6 +17,12 @@ type HomeScreenProps = {
   onOpenDrawer: () => void;
   onOpenAlerts: () => void;
   onNavigate: Navigate;
+};
+const DeviceId = {
+  ph: 14,
+  tempWater: 13,
+  tds: 15,
+  tempAndHumidityAir: 16,
 };
 
 // ─── Helpers đánh giá ngưỡng ──────────────────────────────────────────────────
@@ -88,10 +94,13 @@ export function HomeScreen({
 
       const [phRes, tempWaterRes, tdsRes, tempAndHumidityAirRes] =
         await Promise.all([
-          getNewSensorsValue({ deviceId: 14 }),
-          getNewSensorsValue({ deviceId: 13 }),
-          getNewSensorsValue({ deviceId: 15 }),
-          getNewSensorsValue({ deviceId: 16 }),
+          getSensorsValue({ deviceId: DeviceId.ph, pageSize: 1 }),
+          getSensorsValue({ deviceId: DeviceId.tempWater, pageSize: 1 }),
+          getSensorsValue({ deviceId: DeviceId.tds, pageSize: 1 }),
+          getSensorsValue({
+            deviceId: DeviceId.tempAndHumidityAir,
+            pageSize: 2,
+          }),
         ]);
 
       setPhRaw(phRes?.data?.[0] ?? null);
@@ -100,7 +109,7 @@ export function HomeScreen({
       setTempAirRaw(tempAndHumidityAirRes?.data?.[0] ?? null);
       setHumidityAirRaw(tempAndHumidityAirRes?.data?.[1] ?? null);
     } catch (error) {
-      console.log('Load sensor error:', error);
+      throw error;
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -118,13 +127,14 @@ export function HomeScreen({
 
   /** Chuyển đổi raw API → SensorMetric[] */
   const metrics: SensorMetric[] = useMemo(() => {
-    const result: SensorMetric[] = [];
+    const result: any[] = [];
 
     if (phRaw) {
       const value: number = phRaw.valueNumeric;
       const { severity, status } = getPhSeverity(value);
       result.push({
-        id: 'ph',
+        id: phRaw.id,
+        deviceId: DeviceId.ph,
         label: 'pH nước',
         shortLabel: 'pH',
         value,
@@ -142,7 +152,8 @@ export function HomeScreen({
       const value: number = tempWaterRaw.valueNumeric;
       const { severity, status } = getTempWaterSeverity(value);
       result.push({
-        id: 'temp',
+        id: tempWaterRaw.id,
+        deviceId: DeviceId.tempWater,
         label: 'Nhiệt độ nước',
         shortLabel: '°C',
         value,
@@ -160,7 +171,8 @@ export function HomeScreen({
       const value: number = tdsRaw.valueNumeric;
       const { severity, status } = getTdsSeverity(value);
       result.push({
-        id: 'tds',
+        id: tdsRaw.id,
+        deviceId: DeviceId.tds,
         label: 'TDS',
         shortLabel: 'TDS',
         value,
@@ -178,7 +190,8 @@ export function HomeScreen({
       const value: number = tempAirRaw.valueNumeric;
       const { severity, status } = getTempAirSeverity(value);
       result.push({
-        id: 'temp-air',
+        id: tempAirRaw.id,
+        deviceId: DeviceId.tempAndHumidityAir,
         label: 'Nhiệt độ môi trường',
         shortLabel: '°C',
         value,
@@ -196,7 +209,8 @@ export function HomeScreen({
       const value: number = humidityAirRaw.valueNumeric;
       const { severity, status } = getHumidityAirSeverity(value);
       result.push({
-        id: 'humidity-air',
+        id: humidityAirRaw.id,
+        deviceId: DeviceId.tempAndHumidityAir,
         label: 'Độ ẩm môi trường',
         shortLabel: '%',
         value,

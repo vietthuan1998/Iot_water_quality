@@ -1,86 +1,206 @@
-import React, { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { alerts } from '../../db/mockData';
-import { AlertCard } from '../components/alerts/AlertCard';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { palette } from '../theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Feather';
 import Loading from '../components/Loading';
-import { RefreshControl } from 'react-native-gesture-handler';
-import { getChartsData } from '../api/chartApi';
+import { FlatList, RefreshControl } from 'react-native-gesture-handler';
+import { ChartParams, getChartsData } from '../api/chartApi';
+import Chart from '../components/Chart';
+import {
+  getAllIotDevices,
+  getAllSensorsParams,
+  getSensorsValue,
+} from '../api/sensorApi';
+import Dropdown from '../components/Dropdown';
+import HistoryItemCard from '../components/alerts/HistoryItemCard';
 
 type DetailScreenProps = {
   onBack: () => void;
   metricId: any;
 };
 
+const PageSize = 10;
+
 export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
-  console.log('DetailScreen metricId:', metricId);
   const [refreshing, setRefreshing] = React.useState(false);
   const [loading, setLoading] = useState(true);
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [IotDiveces, setIotDevices] = useState<any[]>([]);
+  const [selectedDevice, setSelectedDevice] = useState<any>(metricId);
+  const [historyData, setHistoryData] = useState<any[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
 
-  const getDataCharts = async () => {
+  const getDataCharts = useCallback(async () => {
     try {
+      // const timeNow = new Date().toISOString();
+      // const timeOneHourAgo = new Date(
+      //   Date.now() - 12 * 60 * 60 * 1000,
+      // ).toISOString();
+      const param: ChartParams = {};
+      if (selectedDevice) {
+        param.deviceId = selectedDevice;
+      }
+      // param.fromTime = timeOneHourAgo || undefined;
+      // param.toTime = timeNow || undefined;
       setLoading(true);
       // Giả lập gọi API lấy dữ liệu mới
-      const res = await getChartsData();
-      console.log('Dữ liệu charts mới:', res);
+      const res = await getChartsData(param);
+      setChartData(res.data);
     } catch (error) {
-      console.error('Lỗi khi lấy dữ liệu charts:', error);
-      setLoading(false);
+      throw error;
     } finally {
       setLoading(false);
       setRefreshing(false);
+      setLoadingMore(false);
     }
-  };
+  }, [selectedDevice]);
+
+  const getDataHistory = useCallback(
+    async (
+      pageToLoad: number,
+      mode: 'initial' | 'refresh' | 'more' = 'initial',
+    ) => {
+      if (mode === 'initial') setLoading(true);
+      if (mode === 'refresh') setRefreshing(true);
+      if (mode === 'more') setLoadingMore(true);
+      try {
+        const param: getAllSensorsParams = {};
+        if (selectedDevice) {
+          param.deviceId = selectedDevice;
+        }
+        param.page = pageToLoad;
+        param.pageSize = PageSize;
+        const res = await getSensorsValue(param);
+        const list = res.data || [];
+        // Fix: Kiểm tra xem có dữ liệu tiếp theo không (nếu trả về đủ PageSize items)
+        setHasMore(list.length === PageSize);
+        setPage(pageToLoad);
+        // Khi load thêm thì append, còn initial/refresh thì reset dữ liệu
+        if (mode === 'more') {
+          setHistoryData(prev => [...prev, ...list]);
+        } else {
+          setHistoryData(list);
+        }
+      } catch (error) {
+        throw error;
+      } finally {
+        setLoading(false); // Nếu muốn có loading riêng cho phần history
+        setRefreshing(false);
+        setLoadingMore(false);
+      }
+    },
+    [selectedDevice],
+  );
+
+  const getIotDevices = useCallback(async () => {
+    try {
+      const res = await getAllIotDevices({ page: 1, pageSize: 500 });
+      setIotDevices(res.data || []);
+    } catch (error) {
+      throw error;
+    } finally {
+      setRefreshing(false);
+      setLoading(false);
+    }
+  }, []);
+  useEffect(() => {
+    getIotDevices();
+  }, [getIotDevices]);
+
   useEffect(() => {
     getDataCharts();
-  }, []);
+    // When selectedDevice changes, reload history (replace existing list)
+    getDataHistory(1, 'initial');
+  }, [getDataCharts, getDataHistory, selectedDevice]);
 
   const onRefresh = () => {
     setRefreshing(true);
     getDataCharts();
+    getDataHistory(1, 'refresh');
   };
+
+  const onEndReached = () => {
+    // Prevent triggering load-more on initial mount or while loading
+    if (loading || loadingMore || !hasMore) return;
+    // If there's no data yet (initial render), skip -- avoids onEndReached firing on mount
+    if (historyData.length === 0) return;
+
+    getDataHistory(page + 1, 'more');
+  };
+
+  const headerComponent = () => (
+    <View style={styles.headerContainer}>
+      <Dropdown
+        data={IotDiveces}
+        value={selectedDevice}
+        setValue={val => {
+          setSelectedDevice(val);
+        }}
+      />
+      <View style={{ marginTop: 18 }}>
+        <Chart data={chartData} />
+      </View>
+    </View>
+  );
+
+  const renderFooter = () => {
+    if (!loadingMore) return null;
+    return (
+      <View style={styles.renderFooter}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  };
+
   if (loading) {
     return <Loading />;
   }
 
-  return (
+  return loading && page === 1 ? (
+    <Loading />
+  ) : (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView
-        contentContainerStyle={styles.alertScroll}
+      <View style={styles.alertHeader}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={onBack}
+          style={styles.iconButton}
+        >
+          <Text style={styles.iconText}>‹</Text>
+        </Pressable>
+        <Text style={styles.screenTitle}>Lịch sử</Text>
+      </View>
+      <FlatList
+        style={styles.alertScroll}
+        data={historyData}
+        keyExtractor={item => String(item.id)}
+        renderItem={({ item }) => <HistoryItemCard item={item} />}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-      >
-        <View style={styles.alertHeader}>
-          <Pressable
-            accessibilityRole="button"
-            onPress={onBack}
-            style={styles.iconButton}
-          >
-            <Text style={styles.iconText}>‹</Text>
-          </Pressable>
-          <Text style={styles.screenTitle}>Lịch sử</Text>
-          <View style={styles.iconButton}>
-            <Icon name="filter" size={24} />
-          </View>
-        </View>
-        {alerts.map((item, index) => (
-          <AlertCard key={item.id} alert={item} index={index + 1} />
-        ))}
-        <View style={styles.supportCard}>
-          <View>
-            <Text style={styles.supportTitle}>Cần hỗ trợ ngay?</Text>
-            <Text style={styles.supportCopy}>
-              Kỹ thuật viên sẵn sàng hỗ trợ 24/7
-            </Text>
-          </View>
-          <Pressable style={styles.callButton}>
-            <Text style={styles.callButtonText}>Gọi kỹ thuật</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
+        ListHeaderComponent={headerComponent}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.2}
+        ListFooterComponent={renderFooter}
+        contentContainerStyle={styles.listContent}
+        initialNumToRender={10}
+      />
+      {/* <Dropdown
+        data={IotDiveces}
+        value={metricId}
+        setValue={setSelectedDevice}
+      />
+      <View style={{ marginTop: 18 }}>
+        <Chart data={chartData} />
+      </View> */}
     </SafeAreaView>
   );
 }
@@ -149,6 +269,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 18,
   },
   supportTitle: {
     color: palette.ink,
@@ -172,5 +293,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '900',
+  },
+  renderFooter: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
+  listContent: {
+    paddingBottom: 32,
+    flexGrow: 1,
+  },
+  headerContainer: {
+    paddingBottom: 18,
   },
 });

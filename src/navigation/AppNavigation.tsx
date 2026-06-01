@@ -86,7 +86,7 @@ function MainDrawerRoute() {
       screenOptions={{
         drawerStyle: { width: 304 },
         headerShown: false,
-        swipeEnabled: true,
+        swipeEnabled: false,
       }}
     >
       <Drawer.Screen name="Dashboard" component={AppStackRoute} />
