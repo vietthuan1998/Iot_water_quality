@@ -150,7 +150,6 @@ export default function ModelDevice({
                   data={deviceTypes}
                 />
               </View>
-
               <View style={[styles.field, !isTablet && styles.fieldFullWidth]}>
                 <FormField
                   label="Nhà sản xuất"
@@ -169,7 +168,6 @@ export default function ModelDevice({
                   placeholder="Model"
                 />
               </View>
-
               <View style={[styles.field, !isTablet && styles.fieldFullWidth]}>
                 <FormField
                   label="Số serial"
