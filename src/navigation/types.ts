@@ -7,6 +7,7 @@ export type AppStackParamList = {
   Devices: undefined;
   Settings: undefined;
   Detail: { metricId: string };
+  DeviceDetail: { data: any };
 };
 
 export type DrawerParamList = {
@@ -19,5 +20,6 @@ export type RootStackParamList = {
 };
 
 export type AppRoute = keyof AppStackParamList;
+export type MainTabRoute = Exclude<AppRoute, 'Detail'>;
 
 export type Navigate = (route: AppRoute, params?: any) => void;

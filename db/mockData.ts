@@ -128,7 +128,7 @@ export const metrics: SensorMetric[] = [
     trend: 'up',
     safeRange: '< 0.01 mg/L',
     color: '#ff9f1c',
-    history: [0.008, 0.014, 0.012, 0.016, 0.020, 0.021, 0.020],
+    history: [0.008, 0.014, 0.012, 0.016, 0.02, 0.021, 0.02],
   },
 ];
 
@@ -214,7 +214,7 @@ export const aiInsights = [
 ];
 
 export const devices = [
-  {id: 'aerator', name: 'Máy oxy', status: 'Tắt', action: 'Bật ngay'},
-  {id: 'pump', name: 'Máy bơm', status: 'Online', action: 'Kiểm tra'},
-  {id: 'filter', name: 'Bộ lọc', status: 'Cần vệ sinh', action: 'Lên lịch'},
+  { id: 'aerator', name: 'Máy oxy', status: 'Tắt', action: 'Bật ngay' },
+  { id: 'pump', name: 'Máy bơm', status: 'Online', action: 'Kiểm tra' },
+  { id: 'filter', name: 'Bộ lọc', status: 'Cần vệ sinh', action: 'Lên lịch' },
 ];

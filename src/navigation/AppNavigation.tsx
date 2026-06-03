@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+  DrawerScreenProps,
+} from '@react-navigation/drawer';
 import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import {
   createNativeStackNavigator,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
+import { StyleSheet, View } from 'react-native';
 import { AppDrawerContent } from '../components/AppDrawerContent';
+import { BottomNav } from '../components/BottomNav';
 import { AlertsScreen } from '../screens/AlertsScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { LoginScreen } from '../screens/LoginScreen';
@@ -14,6 +19,7 @@ import {
   AppRoute,
   AppStackParamList,
   DrawerParamList,
+  MainTabRoute,
   RootStackParamList,
 } from './types';
 import { getToken, saveToken } from '../store/persistToken';
@@ -22,6 +28,8 @@ import { store } from '../store';
 import { DetailScreen } from '../screens/DetailScreen';
 import { useWarningLevels } from '../context/WarningLevelContext';
 import { getAlertLevel } from '../api/chartApi';
+import DeviceManageScreen from '../screens/DeviceManageScreen';
+import DeviceDetail from '../screens/DeviceDetail';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -99,16 +107,42 @@ function MainDrawerRoute() {
   );
 }
 
-function AppStackRoute() {
+function AppStackRoute({
+  navigation,
+}: DrawerScreenProps<DrawerParamList, 'Dashboard'>) {
+  const [activeRoute, setActiveRoute] = useState<AppRoute>('Home');
+
+  const navigate = (route: AppRoute, params?: any) => {
+    navigation.navigate('Dashboard', { screen: route, params });
+  };
+
+  const isMainTabRoute = (route: AppRoute): route is MainTabRoute =>
+    route !== 'Detail';
+
   return (
-    <AppStack.Navigator screenOptions={{ headerShown: false }}>
-      <AppStack.Screen name="Home" component={HomeRoute} />
-      <AppStack.Screen name="Alerts" component={AlertsRoute} />
-      <AppStack.Screen name="History" component={HistoryRoute} />
-      <AppStack.Screen name="Devices" component={DevicesRoute} />
-      <AppStack.Screen name="Settings" component={SettingsRoute} />
-      <AppStack.Screen name="Detail" component={DetailRoute} />
-    </AppStack.Navigator>
+    <View style={styles.appStackShell}>
+      <AppStack.Navigator
+        screenOptions={{ headerShown: false }}
+        screenListeners={{
+          state: event => {
+            const state = event.data.state;
+            const route = state.routes[state.index]?.name as AppRoute;
+            setActiveRoute(route);
+          },
+        }}
+      >
+        <AppStack.Screen name="Home" component={HomeRoute} />
+        <AppStack.Screen name="Alerts" component={AlertsRoute} />
+        <AppStack.Screen name="History" component={HistoryRoute} />
+        <AppStack.Screen name="Devices" component={DevicesRoute} />
+        <AppStack.Screen name="Settings" component={SettingsRoute} />
+        <AppStack.Screen name="Detail" component={DetailRoute} />
+        <AppStack.Screen name="DeviceDetail" component={DeviceDetailRoute} />
+      </AppStack.Navigator>
+      {isMainTabRoute(activeRoute) ? (
+        <BottomNav activeRoute={activeRoute} onNavigate={navigate} />
+      ) : null}
+    </View>
   );
 }
 
@@ -142,8 +176,13 @@ function HistoryRoute({
 function DevicesRoute({
   navigation,
 }: NativeStackScreenProps<AppStackParamList, 'Devices'>) {
+  const navigate = (route: AppRoute, params?: any) =>
+    navigation.navigate(route as any, params);
   return (
-    <PlaceholderScreen route="Devices" onBack={() => navigation.goBack()} />
+    <DeviceManageScreen
+      onBack={() => navigation.goBack()}
+      onNavigate={navigate}
+    />
   );
 }
 
@@ -166,3 +205,18 @@ function DetailRoute({
     />
   );
 }
+
+function DeviceDetailRoute({
+  navigation,
+  route,
+}: NativeStackScreenProps<AppStackParamList, 'DeviceDetail'>) {
+  return (
+    <DeviceDetail onBack={() => navigation.goBack()} data={route.params.data} />
+  );
+}
+
+const styles = StyleSheet.create({
+  appStackShell: {
+    flex: 1,
+  },
+});

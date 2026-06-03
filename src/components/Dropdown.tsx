@@ -23,7 +23,9 @@ export default function Dropdown({
         return (
           <View style={styles.dropdownButtonStyle}>
             <Text style={styles.dropdownButtonTxtStyle}>
-              {(selectedItem && selectedItem.deviceName) || 'Chọn thiết bị'}
+              {(selectedItem &&
+                (selectedItem.deviceName || selectedItem.name)) ||
+                'Chọn thiết bị'}
             </Text>
             <Icon
               name={isOpened ? 'chevron-up' : 'chevron-down'}
@@ -40,7 +42,9 @@ export default function Dropdown({
               ...(isSelected && { backgroundColor: '#D2D9DF' }),
             }}
           >
-            <Text style={styles.dropdownItemTxtStyle}>{item.deviceName}</Text>
+            <Text style={styles.dropdownItemTxtStyle}>
+              {item.deviceName || item.name}
+            </Text>
           </View>
         );
       }}
@@ -53,17 +57,21 @@ const styles = StyleSheet.create({
   dropdownButtonStyle: {
     width: '100%',
     height: 50,
-    backgroundColor: '#E9ECEF',
-    borderRadius: 12,
+    // backgroundColor: '#E9ECEF',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: 16,
+    paddingHorizontal: 20,
+    color: '#111827',
+    backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 12,
   },
   dropdownButtonTxtStyle: {
     flex: 1,
-    fontSize: 18,
-    fontWeight: '500',
+    fontSize: 15,
+    // fontWeight: '500',
     color: '#151E26',
   },
   dropdownButtonArrowStyle: {

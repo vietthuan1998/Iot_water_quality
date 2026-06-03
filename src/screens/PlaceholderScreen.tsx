@@ -1,16 +1,16 @@
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {AppRoute} from '../navigation/types';
+import {AppRoute, MainTabRoute} from '../navigation/types';
 import {palette} from '../theme';
 
-const screenCopy: Record<Exclude<AppRoute, 'Home' | 'Alerts'>, string> = {
+const screenCopy: Record<Exclude<MainTabRoute, 'Home' | 'Alerts'>, string> = {
   History: 'Lịch sử dữ liệu cảm biến và nhật ký chăm sóc sẽ hiển thị ở đây.',
   Devices: 'Quản lý máy oxy, bơm, bộ lọc và trạng thái cụm cảm biến.',
   Settings: 'Cấu hình ngưỡng cảnh báo, khu vực nước và tài khoản.',
 };
 
 type PlaceholderScreenProps = {
-  route: Exclude<AppRoute, 'Home' | 'Alerts'>;
+  route: Exclude<MainTabRoute, 'Home' | 'Alerts'>;
   onBack: () => void;
 };
 
@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: palette.page,
     padding: 20,
+    paddingBottom: 112,
   },
   backButton: {
     width: 44,

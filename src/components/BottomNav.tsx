@@ -1,33 +1,41 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Navigate } from '../navigation/types';
+import { MainTabRoute, Navigate } from '../navigation/types';
 import { palette } from '../theme';
 
 type BottomNavProps = {
+  activeRoute: MainTabRoute;
   onNavigate: Navigate;
 };
 
-export function BottomNav({ onNavigate }: BottomNavProps) {
+export function BottomNav({ activeRoute, onNavigate }: BottomNavProps) {
   return (
     <View style={styles.bottomNav}>
       <NavItem
         label="Trang chủ"
         icon="⌂"
-        active
+        active={activeRoute === 'Home'}
         onPress={() => onNavigate('Home')}
       />
-      <NavItem label="Lịch sử" icon="◷" onPress={() => onNavigate('History')} />
+      <NavItem
+        label="Lịch sử"
+        icon="◷"
+        active={activeRoute === 'History'}
+        onPress={() => onNavigate('History')}
+      />
       <Pressable onPress={() => onNavigate('Alerts')} style={styles.addButton}>
         <Text style={styles.addButtonText}>＋</Text>
       </Pressable>
       <NavItem
         label="Thiết bị"
         icon="▤"
+        active={activeRoute === 'Devices'}
         onPress={() => onNavigate('Devices')}
       />
       <NavItem
         label="Cài đặt"
         icon="⚙"
+        active={activeRoute === 'Settings'}
         onPress={() => onNavigate('Settings')}
       />
     </View>

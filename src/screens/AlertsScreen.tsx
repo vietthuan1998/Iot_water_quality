@@ -51,7 +51,7 @@ export function AlertsScreen({ onBack }: AlertsScreenProps) {
           <View style={styles.summaryTextBlock}>
             <Text style={styles.summaryTitle}>Đang có 3 cảnh báo</Text>
             <Text style={styles.summaryTime}>
-              Cập nhật: {waterArea.updatedAt} ↻
+              Cập nhật: {waterArea.updatedAt}
             </Text>
           </View>
           <Counter
@@ -88,7 +88,7 @@ export function AlertsScreen({ onBack }: AlertsScreenProps) {
 const styles = StyleSheet.create({
   alertScroll: {
     paddingHorizontal: 18,
-    paddingBottom: 28,
+    paddingBottom: 112,
   },
   alertHeader: {
     minHeight: 58,

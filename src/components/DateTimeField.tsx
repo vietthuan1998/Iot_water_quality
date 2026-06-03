@@ -5,7 +5,7 @@ import DatePicker from 'react-native-date-picker';
 
 type Props = {
   label: string;
-  value: Date;
+  value?: Date;
   onChange: (date: Date) => void;
 };
 
@@ -16,15 +16,15 @@ export function DateTimeField({ label, value, onChange }: Props) {
     <>
       <Text style={styles.label}>{label}:</Text>
       <Pressable style={styles.input} onPress={() => setOpen(true)}>
-        <Text style={styles.value}>
-          {moment(value).format('DD/MM/YY HH:mm')}
+        <Text style={[styles.value, !value && { color: '#9CA3AF' }]}>
+          {moment(value).format('DD/MM/YYYY HH:mm')}
         </Text>
       </Pressable>
 
       <DatePicker
         modal
         open={open}
-        date={value}
+        date={value ? value : new Date()}
         mode="datetime"
         locale="vi"
         title={label}
@@ -51,12 +51,18 @@ const styles = StyleSheet.create({
 
   input: {
     height: 48,
-    borderWidth: 1,
-    borderColor: '#DDD',
-    borderRadius: 8,
-    paddingHorizontal: 8,
+    // borderWidth: 1,
+    // borderColor: '#DDD',
+    // borderRadius: 8,
+    // paddingHorizontal: 8,
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: 16,
+    paddingHorizontal: 20,
+    color: '#111827',
+    backgroundColor: '#FFFFFF',
   },
 
   value: {

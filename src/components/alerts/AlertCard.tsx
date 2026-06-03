@@ -33,48 +33,7 @@ export function AlertCard({ alert, index }: AlertCardProps) {
         </View>
         <MiniChart data={alert.history} color={alert.color} />
       </View>
-      {/* <View style={styles.recommendBox}>
-        <Text style={[styles.recommendTitle, { color: alert.color }]}>
-          KHUYẾN NGHỊ
-        </Text>
-        <View style={styles.recommendContent}>
-          <View style={styles.recommendList}>
-            {alert.recommendations.map((item, itemIndex) => (
-              <View key={item} style={styles.recommendRow}>
-                <View
-                  style={[
-                    styles.recommendIndex,
-                    { backgroundColor: alert.color },
-                  ]}
-                >
-                  <Text style={styles.recommendIndexText}>{itemIndex + 1}</Text>
-                </View>
-                <Text style={styles.recommendText}>{item}</Text>
-              </View>
-            ))}
-          </View>
-          <View style={styles.actionColumn}>
-            {alert.primaryAction ? (
-              <Pressable
-                style={[styles.primaryAction, { backgroundColor: alert.color }]}
-              >
-                <Text style={styles.primaryActionText}>
-                  {alert.primaryAction}
-                </Text>
-              </Pressable>
-            ) : null}
-            {alert.secondaryAction ? (
-              <Pressable style={styles.secondaryAction}>
-                <Text
-                  style={[styles.secondaryActionText, { color: alert.color }]}
-                >
-                  {alert.secondaryAction}
-                </Text>
-              </Pressable>
-            ) : null}
-          </View>
-        </View>
-      </View> */}
+      <View>{/** 3 button:  */}</View>
     </View>
   );
 }

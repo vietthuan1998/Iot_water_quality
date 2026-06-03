@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import { BottomNav } from '../components/BottomNav';
 import { SectionTitle } from '../components/SectionTitle';
 import { AlertHero } from '../components/home/AlertHero';
 import { Header } from '../components/home/Header';
@@ -254,7 +253,6 @@ export function HomeScreen({
         />
         <MetricGrid data={metrics} onSelect={onSelectMetric} />
       </ScrollView>
-      <BottomNav onNavigate={onNavigate} />
     </SafeAreaView>
   );
 }

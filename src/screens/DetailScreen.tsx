@@ -259,11 +259,6 @@ const styles = StyleSheet.create({
     fontSize: 42,
     lineHeight: 42,
   },
-  filterIcon: {
-    color: '#42495d',
-    fontSize: 26,
-    transform: [{ rotate: '90deg' }],
-  },
   screenTitle: {
     flex: 1,
     color: palette.ink,
@@ -271,6 +266,12 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     marginLeft: 10,
   },
+  filterIcon: {
+    color: '#42495d',
+    fontSize: 26,
+    transform: [{ rotate: '90deg' }],
+  },
+
   summaryCard: {
     borderRadius: 8,
     borderWidth: 1,
@@ -332,7 +333,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   listContent: {
-    paddingBottom: 32,
+    paddingBottom: 112,
     flexGrow: 1,
   },
   headerContainer: {
@@ -343,7 +344,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 12,
-    gap: 12,
+    gap: 6,
   },
   filterItem: {
     flex: 1,
