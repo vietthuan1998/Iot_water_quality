@@ -32,6 +32,7 @@ const PageSize = 10;
 export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
   const [refreshing, setRefreshing] = React.useState(false);
   const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState<string | null>(null);
   const [chartData, setChartData] = useState<any[]>([]);
   const [IotDiveces, setIotDevices] = useState<any[]>([]);
   const [selectedDevice, setSelectedDevice] = useState<any>(metricId);
@@ -57,8 +58,8 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
       // Giả lập gọi API lấy dữ liệu mới
       const res = await getChartsData(param);
       setChartData(res.data);
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      throw err;
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -94,8 +95,8 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
         } else {
           setHistoryData(list);
         }
-      } catch (error) {
-        throw error;
+      } catch (err) {
+        throw err;
       } finally {
         setLoading(false); // Nếu muốn có loading riêng cho phần history
         setRefreshing(false);
@@ -109,8 +110,8 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
     try {
       const res = await getAllIotDevices({ page: 1, pageSize: 500 });
       setIotDevices(res.data || []);
-    } catch (error) {
-      throw error;
+    } catch (err) {
+      throw err;
     } finally {
       setRefreshing(false);
       setLoading(false);
@@ -225,6 +226,9 @@ export function DetailScreen({ onBack, metricId }: DetailScreenProps) {
         ListFooterComponent={renderFooter}
         contentContainerStyle={styles.listContent}
         initialNumToRender={10}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>Không có số liệu</Text>
+        }
       />
       {/* <Dropdown
         data={IotDiveces}
@@ -352,5 +356,10 @@ const styles = StyleSheet.create({
   chartWrapper: {
     marginTop: 18,
     overflow: 'hidden',
+  },
+  emptyText: {
+    color: '#64748B',
+    marginTop: 32,
+    textAlign: 'center',
   },
 });

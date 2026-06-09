@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { alerts, waterArea } from '../../db/mockData';
 import { AlertCard } from '../components/alerts/AlertCard';
@@ -13,10 +13,11 @@ type AlertsScreenProps = {
 };
 
 export function AlertsScreen({ onBack }: AlertsScreenProps) {
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const totals = useMemo(
     () => ({
+      info: alerts.filter(item => item.level === 'Tốt').length,
       danger: alerts.filter(item => item.level === 'Nguy hiểm').length,
       warning: alerts.filter(item => item.level === 'Cảnh báo').length,
       notice: alerts.filter(item => item.level === 'Lưu ý').length,

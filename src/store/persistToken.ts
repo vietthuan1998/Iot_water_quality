@@ -1,15 +1,15 @@
-import { createMMKV } from 'react-native-mmkv'
+import { createMMKV } from 'react-native-mmkv';
 
-const storage = createMMKV()
+const storage = createMMKV();
 
 export const saveToken = (token: string) => {
-    storage.set('token', token)
-}
+  storage.set('token', token);
+};
 
 export const getToken = () => {
-    return storage.getString('token')
-}
+  return storage.getString('token');
+};
 
 export const removeToken = () => {
-    storage.remove('token')
-}
+  storage.remove('token');
+};

@@ -15,7 +15,7 @@ import { getAllIotDevices } from '../api/sensorApi';
 import { RefreshControl } from 'react-native-gesture-handler';
 import { Navigate } from '../navigation/types';
 import ModelDevice from '../components/device/ModelDevice';
-import { getAllDeviceTypes } from '../api/devices';
+import { getAllDeviceTypes, UpdateDevice } from '../api/devices';
 
 type DetailScreenProps = {
   onBack: () => void;
@@ -80,6 +80,21 @@ export default function DeviceManageScreen({
     },
     [],
   );
+
+  const updateDevice = useCallback(async (data: any) => {
+    try {
+      setLoading(true);
+      // console.log(data);
+      const res = await UpdateDevice(data.id, data);
+      if (res.code !== 0) {
+        throw new Error('Cập nhật thiết bị thất bại' + res.message);
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     getDeviceTypes();
@@ -159,10 +174,9 @@ export default function DeviceManageScreen({
         deviceTypes={deviceTypes}
         onClose={() => setEditVisible(false)}
         onSave={async data => {
-          // await updateDevice(data);
-          console.log('Saved data:', data);
-          // setEditVisible(false);
-          // getDevices(1, 'refresh');
+          await updateDevice(data);
+          setEditVisible(false);
+          getDevices(1, 'refresh');
         }}
       />
     </SafeAreaView>

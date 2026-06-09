@@ -12,12 +12,24 @@ import { owner, waterArea } from '../../db/mockData';
 import { palette } from '../theme';
 
 type LoginScreenProps = {
-  onLogin: () => void;
+  onLogin: (username: string, password: string) => Promise<void>;
 };
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
-  const [email, setEmail] = useState('an.nguyen@aquaguard.vn');
-  const [password, setPassword] = useState('demo1234');
+  const [email, setEmail] = useState('045083004236');
+  const [password, setPassword] = useState('140110');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!email || !password || submitting) return;
+
+    try {
+      setSubmitting(true);
+      await onLogin(email.trim(), password);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -36,33 +48,30 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
         <Text style={styles.label}>Email</Text>
         <TextInput
           autoCapitalize="none"
-          keyboardType="email-address"
           onChangeText={setEmail}
-          placeholder="Email"
-          placeholderTextColor="#9aa1b3"
           style={styles.input}
           value={email}
         />
         <Text style={styles.label}>Mật khẩu</Text>
         <TextInput
           onChangeText={setPassword}
-          placeholder="Mật khẩu"
-          placeholderTextColor="#9aa1b3"
           secureTextEntry
           style={styles.input}
           value={password}
         />
         <Pressable
           accessibilityRole="button"
-          disabled={!email || !password}
-          onPress={onLogin}
+          disabled={!email || !password || submitting}
+          onPress={handleSubmit}
           style={({ pressed }) => [
             styles.loginButton,
             pressed && styles.pressed,
-            (!email || !password) && styles.disabledButton,
+            (!email || !password || submitting) && styles.disabledButton,
           ]}
         >
-          <Text style={styles.loginButtonText}>Đăng nhập</Text>
+          <Text style={styles.loginButtonText}>
+            {submitting ? 'Đang đăng nhập...' : 'Đăng nhập'}
+          </Text>
         </Pressable>
       </View>
 

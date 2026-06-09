@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "863318441921",
+    "project_id": "iot-sensor-agent-ab1d3",
+    "storage_bucket": "iot-sensor-agent-ab1d3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:863318441921:android:10fb89e79f7d8f21a43940",
+        "android_client_info": {
+          "package_name": "com.iot_water_quality"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUH1-upijzFYw7yvh8WWWKnkJqDcfZnlg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

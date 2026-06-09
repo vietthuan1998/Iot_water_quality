@@ -12,7 +12,6 @@ import { Switch } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Feather';
 import FormField from '../FormField';
 import { DateTimeField } from '../DateTimeField';
-import moment from 'moment';
 
 type EditDeviceModalProps = {
   visible: boolean;
@@ -59,7 +58,7 @@ export default function ModelDevice({
     isActive: true,
   });
 
-  console.log('Device types in ModelDevice:', deviceTypes);
+  // console.log('Device types in ModelDevice:', deviceTypes);
 
   useEffect(() => {
     if (device) {
@@ -67,7 +66,6 @@ export default function ModelDevice({
         id: device.id ?? '',
         deviceId: device.deviceId ?? '',
         deviceName: device.deviceName ?? '',
-        deviceType: device.deviceType ?? '',
         deviceTypeId: device.deviceTypeId ?? 0,
         manufacturer: device.manufacturer ?? '',
         model: device.model ?? '',
@@ -78,14 +76,7 @@ export default function ModelDevice({
       });
     }
   }, [device]);
-  console.log(
-    'MMMMMM',
-    moment(
-      '2026-01-05T00:00:00',
-      'DD/MM/YYYY',
-      true, // strict mode
-    ).toDate(),
-  );
+
   const updateField = (key: keyof Device, value: any) => {
     setForm(prev => ({
       ...prev,

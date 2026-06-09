@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   createDrawerNavigator,
   DrawerScreenProps,
@@ -8,7 +8,13 @@ import {
   createNativeStackNavigator,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import { StyleSheet, View } from 'react-native';
+import {
+  Alert,
+  PermissionsAndroid,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { AppDrawerContent } from '../components/AppDrawerContent';
 import { BottomNav } from '../components/BottomNav';
 import { AlertsScreen } from '../screens/AlertsScreen';
@@ -23,39 +29,98 @@ import {
   RootStackParamList,
 } from './types';
 import { getToken, saveToken } from '../store/persistToken';
-import { setToken } from '../store/authSlice';
+import { setRole, setToken, setUser } from '../store/authSlice';
 import { store } from '../store';
 import { DetailScreen } from '../screens/DetailScreen';
-import { useWarningLevels } from '../context/WarningLevelContext';
-import { getAlertLevel } from '../api/chartApi';
 import DeviceManageScreen from '../screens/DeviceManageScreen';
 import DeviceDetail from '../screens/DeviceDetail';
+import { useWarningLevels } from '../context/WarningLevelContext';
+import { login } from '../api/authApi';
+import { jwtDecode } from 'jwt-decode';
+import { getFCMToken } from '../services/fcmService';
+import {
+  getAPNSToken,
+  getMessaging,
+  onMessage,
+  requestPermission,
+} from '@react-native-firebase/messaging';
+import { getApp } from '@react-native-firebase/app';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator<DrawerParamList>();
 const AppStack = createNativeStackNavigator<AppStackParamList>();
 
+type JwtPayload = {
+  sub?: string;
+  username: string;
+  exp?: number;
+};
+
+const app = getApp();
+const messagingInstance = getMessaging(app);
+
 export function AppNavigation() {
   const [isReady, setIsReady] = useState(false);
   const [initialRoute, setInitialRoute] =
     useState<keyof RootStackParamList>('Login');
-  const { setWarningLevels } = useWarningLevels();
+  const { refreshWarningLevels, getAllThresholdValue } = useWarningLevels();
 
-  useEffect(() => {
+  const init = useCallback(async () => {
     const token = getToken();
+    console.log('token', getFCMToken());
+
     if (token) {
       store.dispatch(setToken(token));
+      await refreshWarningLevels();
+      await getAllThresholdValue();
       setInitialRoute('MainDrawer');
     }
-    setIsReady(true);
-  }, []);
 
-  const handleLogin = async () => {
-    const res = await getAlertLevel();
-    setWarningLevels(res.data);
-    const token = 'demo-token';
-    saveToken(token);
-    store.dispatch(setToken(token));
+    setIsReady(true);
+  }, [refreshWarningLevels, getAllThresholdValue]);
+
+  const initFCM = async () => {
+    // Android 13+
+    if (Platform.OS === 'android' && Platform.Version >= 33) {
+      const result = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+      );
+      console.log('Notification permission:', result);
+    }
+    // Xin quyền FCM
+    await requestPermission(messagingInstance);
+    // Lấy token
+    const token = await getAPNSToken(messagingInstance);
+    console.log('FCM TOKEN:', token);
+    // Lắng nghe khi app đang mở
+    onMessage(messagingInstance, async remoteMessage => {
+      console.log('Foreground:', remoteMessage);
+    });
+  };
+
+  useEffect(() => {
+    init();
+    initFCM();
+  }, [init]);
+
+  const handleLogin = async (username: string, password: string) => {
+    try {
+      const token = await login(username, password);
+      const decoded = jwtDecode<JwtPayload>(token);
+
+      saveToken(token);
+      store.dispatch(setToken(token));
+      store.dispatch(setUser(decoded));
+      store.dispatch(setRole('Admin'));
+      console.log('token', getFCMToken());
+      await refreshWarningLevels();
+      await getAllThresholdValue();
+
+      return true;
+    } catch (err: any) {
+      Alert.alert('Đăng nhập thất bại', err.message || 'Vui lòng thử lại');
+      return false;
+    }
   };
 
   if (!isReady) {
@@ -78,15 +143,17 @@ export function AppNavigation() {
 }
 
 type LoginRouteProps = NativeStackScreenProps<RootStackParamList, 'Login'> & {
-  onLogin: () => void;
+  onLogin: (username: string, password: string) => Promise<boolean>;
 };
 
 function LoginRoute({ navigation, onLogin }: LoginRouteProps) {
   return (
     <LoginScreen
-      onLogin={() => {
-        onLogin();
-        navigation.replace('MainDrawer');
+      onLogin={async (username: string, password: string) => {
+        const isLoggedIn = await onLogin(username, password);
+        if (isLoggedIn) {
+          navigation.replace('MainDrawer');
+        }
       }}
     />
   );

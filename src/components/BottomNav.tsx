@@ -23,9 +23,9 @@ export function BottomNav({ activeRoute, onNavigate }: BottomNavProps) {
         active={activeRoute === 'History'}
         onPress={() => onNavigate('History')}
       />
-      <Pressable onPress={() => onNavigate('Alerts')} style={styles.addButton}>
+      {/* <Pressable style={styles.addButton}>
         <Text style={styles.addButtonText}>＋</Text>
-      </Pressable>
+      </Pressable> */}
       <NavItem
         label="Thiết bị"
         icon="▤"
@@ -60,9 +60,9 @@ function NavItem({ label, icon, active, onPress }: NavItemProps) {
 
 const styles = StyleSheet.create({
   bottomNav: {
-    position: 'absolute',
-    left: 20,
-    right: 20,
+    // position: 'absolute',
+    // left: 20,
+    // right: 20,
     bottom: 12,
     minHeight: 76,
     borderRadius: 8,
@@ -86,8 +86,8 @@ const styles = StyleSheet.create({
   },
   navIcon: {
     color: '#5f667b',
-    fontSize: 23,
-    fontWeight: '800',
+    fontSize: 24,
+    fontWeight: '900',
   },
   navLabel: {
     color: '#5f667b',

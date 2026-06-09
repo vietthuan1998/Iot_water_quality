@@ -1,4 +1,4 @@
-export type Severity = 'normal' | 'warning' | 'danger';
+export type Severity = 'info' | 'warning' | 'danger' | 'critical';
 
 export type SensorMetric = {
   id: string;
@@ -21,7 +21,7 @@ export type AlertItem = {
   value: number;
   unit: string;
   safeRange: string;
-  level: 'Nguy hiểm' | 'Cảnh báo' | 'Lưu ý';
+  level: 'Tốt' | 'Nguy hiểm' | 'Cảnh báo' | 'Lưu ý';
   color: string;
   updatedAt: string;
   history: number[];
@@ -98,7 +98,7 @@ export const metrics: SensorMetric[] = [
     value: 7.4,
     unit: '',
     status: 'Tốt',
-    severity: 'normal',
+    severity: 'info',
     trend: 'stable',
     safeRange: '6.8 - 8.0',
     color: '#19b85a',

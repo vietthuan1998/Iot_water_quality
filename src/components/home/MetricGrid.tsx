@@ -54,7 +54,7 @@ function MetricCard({
       </Text>
       <View style={[styles.metricStatus, statusTint(metric.severity)]}>
         <Text style={[styles.metricStatusText, { color: metric.color }]}>
-          {metric.status}{' '}
+          {metric.status}
           {metric.trend === 'up' ? '↑' : metric.trend === 'down' ? '↓' : '✓'}
         </Text>
       </View>
