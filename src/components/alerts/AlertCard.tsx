@@ -25,7 +25,7 @@ export function AlertCard({ alert, index }: AlertCardProps) {
         <View style={styles.alertValueBlock}>
           <Text style={[styles.alertValue, { color: alert.color }]}>
             {alert.value}
-            <Text style={styles.alertValueUnit}> {alert.unit}</Text>
+            <Text style={styles.alertValueUnit}>{alert.unit}</Text>
           </Text>
           <Text style={styles.safeRange}>
             Ngưỡng an toàn: {alert.safeRange}

@@ -1,8 +1,10 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { owner, waterArea } from '../../../db/mockData';
+import { owner } from '../../../db/mockData';
 import { palette } from '../../theme';
 import Icon from 'react-native-vector-icons/EvilIcons';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 type HeaderProps = {
   onOpenDrawer: () => void;
@@ -10,21 +12,23 @@ type HeaderProps = {
 };
 
 export function Header({ onOpenAlerts, onOpenDrawer }: HeaderProps) {
+  const temp = useSelector((state: RootState) => state.auth.user);
+  console.log(temp.name);
   return (
     <View style={styles.header}>
       <Pressable onPress={onOpenDrawer} style={styles.menuButton}>
         <Text style={styles.menuText}>☰</Text>
       </Pressable>
       <View style={styles.headerTitleWrap}>
-        <Text style={styles.areaName}>{waterArea.name}⌄</Text>
-        <Text style={styles.location}>● {waterArea.location}</Text>
+        {/* <Text style={styles.areaName}>{waterArea.name}⌄</Text>
+        <Text style={styles.location}>● {waterArea.location}</Text> */}
       </View>
       <View style={styles.ownerAvatar}>
         <Text style={styles.ownerInitials}>{owner.avatarInitials}</Text>
       </View>
       <View style={styles.ownerBlock}>
         <Text style={styles.ownerName} numberOfLines={1}>
-          {owner.name}
+          {temp.name}
         </Text>
         <Text style={styles.ownerRole}>{owner.role}</Text>
       </View>

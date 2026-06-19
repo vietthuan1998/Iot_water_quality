@@ -37,14 +37,15 @@ import DeviceDetail from '../screens/DeviceDetail';
 import { useWarningLevels } from '../context/WarningLevelContext';
 import { login } from '../api/authApi';
 import { jwtDecode } from 'jwt-decode';
-import { getFCMToken } from '../services/fcmService';
+// import { getFCMToken } from '../services/fcmService';
 import {
-  getAPNSToken,
+  // getAPNSToken,
   getMessaging,
   onMessage,
   requestPermission,
 } from '@react-native-firebase/messaging';
 import { getApp } from '@react-native-firebase/app';
+import AlertScreen2 from '../screens/AlertsScreen2';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -67,10 +68,13 @@ export function AppNavigation() {
 
   const init = useCallback(async () => {
     const token = getToken();
-    console.log('token', getFCMToken());
+    // console.log('token', getFCMToken());
 
     if (token) {
+      const decoded = jwtDecode<JwtPayload>(token);
+
       store.dispatch(setToken(token));
+      store.dispatch(setUser(decoded));
       await refreshWarningLevels();
       await getAllThresholdValue();
       setInitialRoute('MainDrawer');
@@ -90,8 +94,8 @@ export function AppNavigation() {
     // Xin quyền FCM
     await requestPermission(messagingInstance);
     // Lấy token
-    const token = await getAPNSToken(messagingInstance);
-    console.log('FCM TOKEN:', token);
+    // const token = await getAPNSToken(messagingInstance);
+    // console.log('FCM TOKEN:', token);
     // Lắng nghe khi app đang mở
     onMessage(messagingInstance, async remoteMessage => {
       console.log('Foreground:', remoteMessage);
@@ -112,7 +116,7 @@ export function AppNavigation() {
       store.dispatch(setToken(token));
       store.dispatch(setUser(decoded));
       store.dispatch(setRole('Admin'));
-      console.log('token', getFCMToken());
+      // console.log('token', getFCMToken());
       await refreshWarningLevels();
       await getAllThresholdValue();
 
@@ -199,10 +203,11 @@ function AppStackRoute({
         }}
       >
         <AppStack.Screen name="Home" component={HomeRoute} />
-        <AppStack.Screen name="Alerts" component={AlertsRoute} />
+        <AppStack.Screen name="Alerts" component={AlertScreen2} />
         <AppStack.Screen name="History" component={HistoryRoute} />
         <AppStack.Screen name="Devices" component={DevicesRoute} />
         <AppStack.Screen name="Settings" component={SettingsRoute} />
+        {/* <AppStack.Screen name="Settings" component={AlertScreen2} /> */}
         <AppStack.Screen name="Detail" component={DetailRoute} />
         <AppStack.Screen name="DeviceDetail" component={DeviceDetailRoute} />
       </AppStack.Navigator>
@@ -228,11 +233,11 @@ function HomeRoute({
   );
 }
 
-function AlertsRoute({
-  navigation,
-}: NativeStackScreenProps<AppStackParamList, 'Alerts'>) {
-  return <AlertsScreen onBack={() => navigation.goBack()} />;
-}
+// function AlertsRoute({
+//   navigation,
+// }: NativeStackScreenProps<AppStackParamList, 'Alerts'>) {
+//   return <AlertsScreen onBack={() => navigation.goBack()} />;
+// }
 
 function HistoryRoute({
   navigation,

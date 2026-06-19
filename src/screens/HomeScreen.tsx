@@ -12,6 +12,7 @@ import { SensorMetric } from '../../db/mockData';
 import { RefreshControl } from 'react-native-gesture-handler';
 import Loading from '../components/Loading';
 import { useWarningLevels } from '../context/WarningLevelContext';
+import { normalizeValue } from '../services/normalizeValue';
 
 type HomeScreenProps = {
   onOpenDrawer: () => void;
@@ -111,6 +112,10 @@ export function HomeScreen({
     const result: any[] = [];
     // console.log(getAlertColor(7, DeviceId.ph, thresholdValue));
     if (phRaw) {
+      console.log(
+        'normalize Data',
+        normalizeValue(phRaw[0] || {}, thresholdValue || []),
+      );
       const value: number = phRaw[0].valueNumeric;
       const { colorCode, name } = getAlertColor(
         value,

@@ -14,7 +14,6 @@ type AlertsScreenProps = {
 
 export function AlertsScreen({ onBack }: AlertsScreenProps) {
   const [refreshing, setRefreshing] = useState(false);
-
   const totals = useMemo(
     () => ({
       info: alerts.filter(item => item.level === 'Tốt').length,
