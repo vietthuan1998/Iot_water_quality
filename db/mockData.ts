@@ -3,7 +3,7 @@ export type Severity = 'info' | 'warning' | 'danger' | 'critical';
 export type SensorMetric = {
   id: string;
   label: string;
-  shortLabel: string;
+  icon: string;
   value: number;
   unit: string;
   status: string;
@@ -50,7 +50,7 @@ export const waterArea = {
   volume: '18 m3',
   fishType: 'Koi Nhật',
   fishCount: 28,
-  status: 'Nguy hiểm',
+  status: 'NGUY HIỂM',
   updatedAt: '09:41 AM',
 };
 
@@ -68,7 +68,7 @@ export const metrics: SensorMetric[] = [
   {
     id: 'do',
     label: 'Oxy hòa tan',
-    shortLabel: 'DO',
+    icon: 'molecule',
     value: 3.2,
     unit: 'mg/L',
     status: 'Rất thấp',
@@ -81,7 +81,7 @@ export const metrics: SensorMetric[] = [
   {
     id: 'temp',
     label: 'Nhiệt độ',
-    shortLabel: 'Temp',
+    icon: 'thermometer',
     value: 30.1,
     unit: '°C',
     status: 'Cao',
@@ -94,7 +94,7 @@ export const metrics: SensorMetric[] = [
   {
     id: 'ph',
     label: 'pH',
-    shortLabel: 'pH',
+    icon: 'ph',
     value: 7.4,
     unit: '',
     status: 'Tốt',
@@ -107,7 +107,7 @@ export const metrics: SensorMetric[] = [
   {
     id: 'turbidity',
     label: 'Độ đục',
-    shortLabel: 'NTU',
+    icon: 'water-outline',
     value: 2.6,
     unit: 'NTU',
     status: 'Hơi cao',
@@ -120,7 +120,7 @@ export const metrics: SensorMetric[] = [
   {
     id: 'ammonia',
     label: 'Amoniac',
-    shortLabel: 'NH3',
+    icon: 'flask',
     value: 0.02,
     unit: 'mg/L',
     status: 'Cao',

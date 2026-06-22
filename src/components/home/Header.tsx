@@ -12,8 +12,7 @@ type HeaderProps = {
 };
 
 export function Header({ onOpenAlerts, onOpenDrawer }: HeaderProps) {
-  const temp = useSelector((state: RootState) => state.auth.user);
-  console.log(temp.name);
+  const user = useSelector((state: RootState) => state.auth.user);
   return (
     <View style={styles.header}>
       <Pressable onPress={onOpenDrawer} style={styles.menuButton}>
@@ -28,7 +27,7 @@ export function Header({ onOpenAlerts, onOpenDrawer }: HeaderProps) {
       </View>
       <View style={styles.ownerBlock}>
         <Text style={styles.ownerName} numberOfLines={1}>
-          {temp.name}
+          {user.name}
         </Text>
         <Text style={styles.ownerRole}>{owner.role}</Text>
       </View>

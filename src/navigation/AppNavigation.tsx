@@ -17,7 +17,6 @@ import {
 } from 'react-native';
 import { AppDrawerContent } from '../components/AppDrawerContent';
 import { BottomNav } from '../components/BottomNav';
-import { AlertsScreen } from '../screens/AlertsScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { LoginScreen } from '../screens/LoginScreen';
 import { PlaceholderScreen } from '../screens/PlaceholderScreen';
@@ -203,7 +202,7 @@ function AppStackRoute({
         }}
       >
         <AppStack.Screen name="Home" component={HomeRoute} />
-        <AppStack.Screen name="Alerts" component={AlertScreen2} />
+        <AppStack.Screen name="Alerts" component={AlertsRoute} />
         <AppStack.Screen name="History" component={HistoryRoute} />
         <AppStack.Screen name="Devices" component={DevicesRoute} />
         <AppStack.Screen name="Settings" component={SettingsRoute} />
@@ -233,11 +232,11 @@ function HomeRoute({
   );
 }
 
-// function AlertsRoute({
-//   navigation,
-// }: NativeStackScreenProps<AppStackParamList, 'Alerts'>) {
-//   return <AlertsScreen onBack={() => navigation.goBack()} />;
-// }
+function AlertsRoute({
+  navigation,
+}: NativeStackScreenProps<AppStackParamList, 'Alerts'>) {
+  return <AlertScreen2 onBack={() => navigation.goBack()} />;
+}
 
 function HistoryRoute({
   navigation,

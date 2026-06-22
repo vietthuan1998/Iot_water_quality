@@ -1,7 +1,7 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {waterArea} from '../../../db/mockData';
-import {palette} from '../../theme';
+import { StyleSheet, Text, View } from 'react-native';
+import { waterArea } from '../../../db/mockData';
+import { palette } from '../../theme';
 
 export function StatusPanel() {
   return (
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 18,
     shadowColor: palette.red,
-    shadowOffset: {width: 0, height: 8},
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.24,
     shadowRadius: 12,
     elevation: 4,
@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     fontSize: 21,
     fontWeight: '900',
     marginTop: 6,
+    fontFamily: 'Inter',
   },
   statusDescription: {
     color: '#4f566c',

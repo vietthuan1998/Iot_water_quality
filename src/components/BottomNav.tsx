@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MainTabRoute, Navigate } from '../navigation/types';
 import { palette } from '../theme';
 
@@ -9,8 +10,10 @@ type BottomNavProps = {
 };
 
 export function BottomNav({ activeRoute, onNavigate }: BottomNavProps) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={styles.bottomNav}>
+    <View style={[styles.bottomNav, { bottom: Math.max(insets.bottom, 12) }]}>
       <NavItem
         label="Trang chủ"
         icon="⌂"
@@ -60,10 +63,9 @@ function NavItem({ label, icon, active, onPress }: NavItemProps) {
 
 const styles = StyleSheet.create({
   bottomNav: {
-    // position: 'absolute',
-    // left: 20,
-    // right: 20,
-    bottom: 12,
+    position: 'absolute',
+    left: 0,
+    right: 0,
     minHeight: 76,
     borderRadius: 8,
     borderWidth: 1,
@@ -72,6 +74,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
+    paddingTop: 8,
+    paddingBottom: 8,
     shadowColor: '#14213d',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,

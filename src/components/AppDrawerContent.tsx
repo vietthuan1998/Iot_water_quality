@@ -8,7 +8,8 @@ import { palette } from '../theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { logout } from '../store/authSlice';
 import { removeToken } from '../store/persistToken';
-import { store } from '../store';
+import { RootState, store } from '../store';
+import { useSelector } from 'react-redux';
 
 const drawerItems: Array<{ label: string; route: AppRoute; icon: string }> = [
   { label: 'Tổng quan', route: 'Home', icon: '⌂' },
@@ -19,6 +20,8 @@ const drawerItems: Array<{ label: string; route: AppRoute; icon: string }> = [
 ];
 
 export function AppDrawerContent({ navigation }: DrawerContentComponentProps) {
+  const user = useSelector((state: RootState) => state.auth.user);
+
   const handleLogout = () => {
     removeToken();
     store.dispatch(logout());
@@ -33,7 +36,7 @@ export function AppDrawerContent({ navigation }: DrawerContentComponentProps) {
             <Text style={styles.avatarText}>{owner.avatarInitials}</Text>
           </View>
           <View style={styles.profileCopy}>
-            <Text style={styles.name}>{owner.name}</Text>
+            <Text style={styles.name}>{user.name}</Text>
             <Text style={styles.role}>{owner.role}</Text>
           </View>
         </View>

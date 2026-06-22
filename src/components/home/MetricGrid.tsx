@@ -1,5 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Feather from 'react-native-vector-icons/Feather';
 import { SensorMetric } from '../../../db/mockData';
 import { palette } from '../../theme';
 
@@ -19,7 +21,7 @@ export function MetricGrid({
         ))}
       <Pressable style={styles.moreCard}>
         <View style={styles.waterIcon}>
-          <Text style={styles.waterIconText}>≈</Text>
+          <Feather name="more-horizontal" size={30} color="#fff" />
         </View>
         <Text style={styles.moreText}>Xem thêm</Text>
       </Pressable>
@@ -40,12 +42,16 @@ function MetricCard({
       style={styles.metricCard}
       onPress={() => onSelect(metric.deviceId)}
     >
-      <View style={[styles.metricIcon, { backgroundColor: metric.color }]}>
-        <Text style={styles.metricIconText}>
-          {metric.id === 'temp' ? '°C' : metric.shortLabel}
-        </Text>
+      <View style={styles.metricHeader}>
+        <View style={[styles.metricIcon, { backgroundColor: metric.color }]}>
+          <MaterialCommunityIcons
+            name={metric.icon || 'chart-bubble'}
+            size={22}
+            color="#fff"
+          />
+        </View>
+        <Text style={styles.metricLabel}>{metric.label}</Text>
       </View>
-      <Text style={styles.metricLabel}>{metric.label}</Text>
       <Text style={styles.metricValue}>
         {typeof metric.value === 'number'
           ? parseFloat(metric.value.toFixed(2))
@@ -86,8 +92,14 @@ const styles = StyleSheet.create({
     borderColor: palette.border,
     backgroundColor: '#fff',
     padding: 12,
-    alignItems: 'center',
+    alignItems: 'stretch',
     margin: 2,
+  },
+  metricHeader: {
+    minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   metricIcon: {
     width: 38,
@@ -95,18 +107,12 @@ const styles = StyleSheet.create({
     borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
-  },
-  metricIconText: {
-    color: '#fff',
-    fontSize: 13,
-    fontWeight: '900',
   },
   metricLabel: {
-    color: '#3f465c',
+    color: '#7c8295',
     fontSize: 12,
-    minHeight: 34,
-    textAlign: 'center',
+    lineHeight: 16,
+    flex: 1,
   },
   metricValue: {
     color: palette.ink,
@@ -162,11 +168,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
-  },
-  waterIconText: {
-    color: '#fff',
-    fontSize: 30,
-    fontWeight: '900',
   },
   moreText: {
     color: '#1269d3',

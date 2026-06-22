@@ -8,6 +8,7 @@ import {
   RefreshControl,
   Text,
   ScrollView,
+  Pressable,
 } from 'react-native';
 import { getSensorsValue } from '../api/sensorApi';
 import { getAllAler } from '../api/alertApi';
@@ -75,6 +76,10 @@ interface ApiListResponse<T> {
   pageSize: number;
   total: number;
 }
+
+type AlertsScreenProps = {
+  onBack: () => void;
+};
 
 // ─── Hàm group alerts theo (deviceIdFk, parameterId) ─────────────────────────
 function groupAlerts(alerts: Alert[]): GroupedAlert[] {
@@ -307,7 +312,7 @@ function StatsBar({ totalGroups, totalAlerts, newCount }: StatsBarProps) {
 }
 
 // ── Main Screen ───────────────────────────────────────────────────────────────
-export default function AlertScreen() {
+export default function AlertScreen({ onBack }: AlertsScreenProps) {
   const [groupedAlerts, setGroupedAlerts] = useState<GroupedAlert[]>([]);
   const [totalAlerts, setTotalAlerts] = useState(0);
   const [observationsMap, setObservationsMap] = useState<
@@ -438,7 +443,18 @@ export default function AlertScreen() {
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Cảnh báo</Text>
+        <View
+          style={{ flexDirection: 'row', alignItems: 'center', minHeight: 58 }}
+        >
+          <Pressable
+            accessibilityRole="button"
+            onPress={onBack}
+            style={styles.iconButton}
+          >
+            <Text style={styles.iconText}>‹</Text>
+          </Pressable>
+          <Text style={styles.headerTitle}>Cảnh báo</Text>
+        </View>
         <TouchableOpacity onPress={onRefresh} style={styles.refreshBtn}>
           <Text style={styles.refreshBtnText}>↻ Làm mới</Text>
         </TouchableOpacity>
@@ -472,7 +488,7 @@ export default function AlertScreen() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#F4F4F2' },
+  screen: { flex: 1, backgroundColor: '#F4F4F2', paddingBottom: 70 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -586,4 +602,15 @@ const styles = StyleSheet.create({
   emptyState: { alignItems: 'center', paddingTop: 80 },
   emptyIcon: { fontSize: 40, marginBottom: 12 },
   emptyText: { fontSize: 15, color: '#AAA' },
+  iconButton: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconText: {
+    color: '#42495d',
+    fontSize: 42,
+    lineHeight: 42,
+  },
 });

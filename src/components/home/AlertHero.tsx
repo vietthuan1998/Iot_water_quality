@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   heroTitle: {
     color: '#fff',
     fontSize: 19,
-    fontWeight: '900',
+    fontWeight: '500',
   },
   heroSubtitle: {
     color: '#ffe8ec',
