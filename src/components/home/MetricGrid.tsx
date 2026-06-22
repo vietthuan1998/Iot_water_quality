@@ -1,7 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Feather from 'react-native-vector-icons/Feather';
 import { SensorMetric } from '../../../db/mockData';
 import { palette } from '../../theme';
 
@@ -19,12 +18,6 @@ export function MetricGrid({
         data?.map((v: any) => (
           <MetricCard key={v.id} metric={v} onSelect={onSelect} />
         ))}
-      <Pressable style={styles.moreCard}>
-        <View style={styles.waterIcon}>
-          <Feather name="more-horizontal" size={30} color="#fff" />
-        </View>
-        <Text style={styles.moreText}>Xem thêm</Text>
-      </Pressable>
     </View>
   );
 }

@@ -24,6 +24,7 @@ const DeviceId = {
   tempWater: 13,
   tds: 15,
   tempAndHumidityAir: 16,
+  do : 10013
 };
 
 function getAlertColor(
@@ -32,16 +33,34 @@ function getAlertColor(
   parameterCode: number,
   thresholds: any[],
 ) {
+  // Kiểm tra nếu thresholds không hợp lệ
+  if (!thresholds || !Array.isArray(thresholds) || thresholds.length === 0) {
+    return {
+      colorCode: '#18b65f', // Default: green
+      name: 'Bình thường',
+    };
+  }
+
   const matchedRule = thresholds.find(
     item =>
-      item.parameterId === parameterCode &&
-      item.deviceIdFk === deviceId &&
-      value >= item.minValue &&
-      value <= item.maxValue,
+      item?.parameterId === parameterCode &&
+      item?.deviceIdFk === deviceId &&
+      value >= item?.minValue &&
+      value <= item?.maxValue,
   );
+
+  // Kiểm tra nếu tìm được rule
+  if (matchedRule && matchedRule.alertLevel) {
+    return {
+      colorCode: matchedRule.alertLevel.colorCode || '#18b65f',
+      name: matchedRule.alertLevel.name || 'Bình thường',
+    };
+  }
+
+  // Default nếu không tìm được matching rule
   return {
-    colorCode: matchedRule?.alertLevel?.colorCode,
-    name: matchedRule?.alertLevel?.name,
+    colorCode: '#18b65f', // Default: green (safe)
+    name: 'Bình thường',
   };
 }
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -56,6 +75,7 @@ export function HomeScreen({
   const [tdsRaw, setTdsRaw] = useState<any>(null);
   const [tempAirRaw, setTempAirRaw] = useState<any>(null);
   const [humidityAirRaw, setHumidityAirRaw] = useState<any>(null);
+  const [doRaw, setDoRaw] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const thresholdValue = useWarningLevels().thresholdValue;
@@ -64,11 +84,15 @@ export function HomeScreen({
     try {
       setLoading(true);
 
-      const [phRes, tempWaterRes, tdsRes, tempAndHumidityAirRes] =
+      const [phRes, tempWaterRes, tdsRes, doRes, tempAndHumidityAirRes] =
         await Promise.all([
           getSensorsValue({ deviceId: DeviceId.ph, pageSize: 2 }),
           getSensorsValue({ deviceId: DeviceId.tempWater, pageSize: 2 }),
           getSensorsValue({ deviceId: DeviceId.tds, pageSize: 2 }),
+          getSensorsValue({
+            deviceId: DeviceId.do,
+            pageSize: 2,
+          }),
           getSensorsValue({
             deviceId: DeviceId.tempAndHumidityAir,
             pageSize: 4,
@@ -78,6 +102,7 @@ export function HomeScreen({
       setPhRaw(phRes?.data);
       setTempWaterRaw(tempWaterRes?.data);
       setTdsRaw(tdsRes?.data);
+      setDoRaw(doRes?.data);
       setHumidityAirRaw(
         tempAndHumidityAirRes.data.filter(
           (ele: { parameter: { code: string } }) =>
@@ -128,6 +153,30 @@ export function HomeScreen({
         deviceId: DeviceId.ph,
         label: 'pH',
         icon: 'ph',
+        value,
+        unit: '',
+        status: name,
+        severity: name,
+        trend: value < 6.5 ? 'down' : value > 7.5 ? 'up' : 'stable',
+        safeRange: '6.5 – 7.5',
+        color: colorCode,
+        history: [],
+      });
+    }
+     if (doRaw) {
+      console.log(doRaw)
+      const value: number = doRaw[0].valueNumeric;
+      const { colorCode, name } = getAlertColor(
+        value,
+        doRaw[0].deviceIdFk,
+        doRaw[0].parameterId,
+        thresholdValue,
+      );
+      result.push({
+        id: doRaw[0].id,
+        deviceId: DeviceId.do,
+        label: 'DO',
+        icon: 'chart-bubble',
         value,
         unit: '',
         status: name,
@@ -236,7 +285,7 @@ export function HomeScreen({
     }
 
     return result;
-  }, [phRaw, tempWaterRaw, tdsRaw, tempAirRaw, humidityAirRaw, thresholdValue]);
+  }, [phRaw, tempWaterRaw, tdsRaw, tempAirRaw, humidityAirRaw, thresholdValue, doRaw]);
 
   const onSelectMetric = (metricId: string) => {
     onNavigate('Detail', { metricId });

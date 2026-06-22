@@ -1,8 +1,10 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+// Import thư viện icon - Ionicons có thiết kế rất hiện đại cho mobile
+import Icon from 'react-native-vector-icons/Ionicons';
 import { MainTabRoute, Navigate } from '../navigation/types';
-import { palette } from '../theme';
+// import { palette } from '../theme'; // Tạm thời comment nếu bạn chưa dùng tới
 
 type BottomNavProps = {
   activeRoute: MainTabRoute;
@@ -13,111 +15,143 @@ export function BottomNav({ activeRoute, onNavigate }: BottomNavProps) {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.bottomNav, { bottom: Math.max(insets.bottom, 12) }]}>
-      <NavItem
-        label="Trang chủ"
-        icon="⌂"
-        active={activeRoute === 'Home'}
-        onPress={() => onNavigate('Home')}
-      />
-      <NavItem
-        label="Lịch sử"
-        icon="◷"
-        active={activeRoute === 'History'}
-        onPress={() => onNavigate('History')}
-      />
-      {/* <Pressable style={styles.addButton}>
-        <Text style={styles.addButtonText}>＋</Text>
-      </Pressable> */}
-      <NavItem
-        label="Thiết bị"
-        icon="▤"
-        active={activeRoute === 'Devices'}
-        onPress={() => onNavigate('Devices')}
-      />
-      <NavItem
-        label="Cài đặt"
-        icon="⚙"
-        active={activeRoute === 'Settings'}
-        onPress={() => onNavigate('Settings')}
-      />
+    <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+      <View style={styles.bottomNav}>
+        <NavItem
+          label="Trang chủ"
+          // Tự động chuyển đổi giữa icon đặc (solid) và viền (outline)
+          iconName={activeRoute === 'Home' ? 'home' : 'home-outline'}
+          active={activeRoute === 'Home'}
+          onPress={() => onNavigate('Home')}
+        />
+        <NavItem
+          label="Lịch sử"
+          iconName={activeRoute === 'History' ? 'time' : 'time-outline'}
+          active={activeRoute === 'History'}
+          onPress={() => onNavigate('History')}
+        />
+        
+        {/* Nút FAB trung tâm sử dụng Icon Add */}
+        <Pressable style={styles.addButton}>
+          <Icon name="add" size={36} color="#ffffff" style={styles.addIcon} />
+        </Pressable>
+
+        <NavItem
+          label="Thiết bị"
+          iconName={activeRoute === 'Devices' ? 'hardware-chip' : 'hardware-chip-outline'}
+          active={activeRoute === 'Devices'}
+          onPress={() => onNavigate('Devices')}
+        />
+        <NavItem
+          label="Cài đặt"
+          iconName={activeRoute === 'Settings' ? 'settings' : 'settings-outline'}
+          active={activeRoute === 'Settings'}
+          onPress={() => onNavigate('Settings')}
+        />
+      </View>
     </View>
   );
 }
 
 type NavItemProps = {
   label: string;
-  icon: string;
+  iconName: string;
   onPress: () => void;
   active?: boolean;
 };
 
-function NavItem({ label, icon, active, onPress }: NavItemProps) {
+function NavItem({ label, iconName, active, onPress }: NavItemProps) {
+  // Quản lý màu sắc trực tiếp qua props của Vector Icons
+  const iconColor = active ? '#20bd63' : '#8e96aa';
+
   return (
     <Pressable onPress={onPress} style={styles.navItem}>
-      <Text style={[styles.navIcon, active && styles.navActive]}>{icon}</Text>
-      <Text style={[styles.navLabel, active && styles.navActive]}>{label}</Text>
+      <View style={[styles.iconContainer, active && styles.activeIconContainer]}>
+        <Icon name={iconName} size={24} color={iconColor} />
+      </View>
+      <Text style={[styles.navLabel, active && styles.navActiveText]}>{label}</Text>
+      {active && <View style={styles.activeDot} />}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  bottomNav: {
+  container: {
     position: 'absolute',
+    bottom: 0,
     left: 0,
     right: 0,
-    minHeight: 76,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: palette.border,
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent', 
+  },
+  bottomNav: {
+    marginHorizontal: 20, 
+    height: 72,
+    borderRadius: 36, 
+    backgroundColor: '#ffffff',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around',
-    paddingTop: 8,
-    paddingBottom: 8,
-    shadowColor: '#14213d',
-    shadowOffset: { width: 0, height: 8 },
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.08,
-    shadowRadius: 18,
-    elevation: 8,
+    shadowRadius: 20,
+    elevation: 10, 
   },
   navItem: {
-    width: 66,
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
+    height: '100%',
   },
-  navIcon: {
-    color: '#5f667b',
-    fontSize: 24,
-    fontWeight: '900',
+  iconContainer: {
+    width: 40,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    marginBottom: 2,
+  },
+  activeIconContainer: {
+    backgroundColor: 'rgba(32, 189, 99, 0.1)', 
   },
   navLabel: {
-    color: '#5f667b',
-    fontSize: 11,
+    color: '#8e96aa',
+    fontSize: 10,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  navActiveText: {
+    color: '#20bd63', 
     fontWeight: '700',
   },
-  navActive: {
-    color: '#19a95a',
+  activeDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#20bd63',
+    position: 'absolute',
+    bottom: 6,
   },
   addButton: {
-    width: 62,
-    height: 62,
-    borderRadius: 31,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: '#20bd63',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: -30, 
+    borderWidth: 4,
+    borderColor: '#f5f7fa', 
     shadowColor: '#20bd63',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.4,
     shadowRadius: 12,
-    elevation: 7,
+    elevation: 8,
   },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 35,
-    lineHeight: 38,
-    fontWeight: '400',
-  },
+  addIcon: {
+    // Tinh chỉnh nhẹ vị trí icon cộng cho cân đối trên iOS/Android
+    marginTop: Platform.OS === 'ios' ? 2 : 0, 
+    marginLeft: Platform.OS === 'ios' ? 2 : 0,
+  }
 });
